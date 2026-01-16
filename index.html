@@ -160,20 +160,20 @@
 </div>
 
 <div class="video-container">
-  <iframe id="main-player" src="https://cricket-yoddha.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php" allowfullscreen allow="autoplay"></iframe>
+  <iframe id="main-player" src="https://cricketstan.github.io/channel-10" allowfullscreen allow="autoplay"></iframe>
 </div>
 
 <div class="server-control">
     <div class="server-row">
-        <div class="srv-pill active" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php')">
+        <div class="srv-pill active" onclick="play(this, 'https://cricketstan.github.io/channel-10')">
             <span class="srv-title">Jio Hotstar</span>
             <span class="srv-quality">Hindi</span>
         </div>
-        <div class="srv-pill" onclick="play(this, 'https://jio-hot-live.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php')">
+        <div class="srv-pill" onclick="play(this, 'https://cricketstan.github.io/channel-10')">
             <span class="srv-title">Star Sports</span>
             <span class="srv-quality">Hindi HD</span>
         </div>
-        <div class="srv-pill" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://manojmallah89-tech.github.io/Willow-sports/')">
+        <div class="srv-pill" onclick="play(this, 'https://manojmallah89-tech.github.io/Willow-sports/')">
             <span class="srv-title">Willow Sports</span>
             <span class="srv-quality">English HD</span>
         </div>
@@ -264,7 +264,10 @@
     function closePopup() { document.getElementById('popup').style.display = 'none'; }
     
     function play(btn, url) {
-        document.getElementById('main-player').src = url;
+        // Fix for GitHub rendering - sometimes adding timestamp avoids cache issues
+        const cacheBuster = url.includes('?') ? '&t=' : '?t=';
+        document.getElementById('main-player').src = url + cacheBuster + new Date().getTime();
+        
         document.querySelectorAll('.srv-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         if (window.navigator.vibrate) window.navigator.vibrate(40);
