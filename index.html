@@ -51,24 +51,24 @@
     .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
     .video-container iframe { width: 100%; height: 100%; border: none; }
     
-    /* --- FIXED SERVER GRID (Proper Box Layout) --- */
+    /* --- PROFESSIONAL SERVER GRID --- */
     .server-control { padding: 15px; background: var(--secondary-dark); border-bottom: 1px solid var(--border-color); }
     .server-row { 
       display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
-      gap: 10px; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 8px; 
     }
     .srv-pill {
-      background: var(--primary-dark); border: 1px solid var(--border-color);
-      border-radius: 12px; padding: 10px 5px; cursor: pointer;
+      background: var(--primary-dark); border: 1.5px solid var(--border-color);
+      border-radius: 12px; padding: 10px 4px; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; 
       transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
       text-align: center;
     }
     .srv-pill.active { border-color: var(--accent-color); background: rgba(250, 204, 21, 0.1); box-shadow: 0 0 15px var(--neon-glow); transform: translateY(-3px); }
     .srv-pill:active { transform: scale(0.92); }
-    .srv-title { font-size: 11px; font-weight: 700; white-space: normal; line-height: 1.2; margin-bottom: 4px; }
-    .srv-quality { font-size: 9px; color: var(--accent-color); font-weight: 800; }
+    .srv-title { font-size: 10px; font-weight: 800; white-space: normal; line-height: 1.2; margin-bottom: 3px; color: #fff; text-transform: uppercase; }
+    .srv-quality { font-size: 8px; color: var(--accent-color); font-weight: 700; letter-spacing: 0.5px; }
 
     /* --- ACTION BAR --- */
     .action-bar {
@@ -155,27 +155,27 @@
 
 <div class="news-ticker">
     <div class="ticker-content">
-        🏆 Welcome to Cricket Yoddha HD • Join Telegram for Latest Match Links • Watch Free Live Match Without Buffering • Support Us by Sharing!
+        🏆 Welcome to Cricket Yoddha HD • Join Telegram for Latest Match Links • High Speed Servers Active • Share with Friends!
     </div>
 </div>
 
 <div class="video-container">
-  <iframe id="main-player" src="https://cricketstan.github.io/channel-10" allowfullscreen allow="autoplay"></iframe>
+  <iframe id="main-player" src="https://cricket-yoddha.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php" allowfullscreen allow="autoplay"></iframe>
 </div>
 
 <div class="server-control">
     <div class="server-row">
-        <div class="srv-pill active" onclick="play(this, 'https://allinonereborn.xyz/amit/hls2.php')">
-            <span class="srv-title">JIO HOTSTAR</span>
-            <span class="srv-quality">HINDI</span>
+        <div class="srv-pill active" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php')">
+            <span class="srv-title">Jio Hotstar</span>
+            <span class="srv-quality">Hindi</span>
         </div>
-        <div class="srv-pill" onclick="play(this, 'https://cricketstan.github.io/channel-10')">
-            <span class="srv-title">STAR SPORTS</span>
-            <span class="srv-quality">HINDI</span>
+        <div class="srv-pill" onclick="play(this, 'https://jio-hot-live.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php')">
+            <span class="srv-title">Star Sports</span>
+            <span class="srv-quality">Hindi HD</span>
         </div>
-        <div class="srv-pill" onclick="play(this, 'https://manojmallah89-tech.github.io/Willow-sports/')">
-            <span class="srv-title">WILLOW SPORTS</span>
-            <span class="srv-quality">ENGLISH</span>
+        <div class="srv-pill" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://manojmallah89-tech.github.io/Willow-sports/')">
+            <span class="srv-title">Willow Sports</span>
+            <span class="srv-quality">English HD</span>
         </div>
     </div>
 </div>
@@ -264,7 +264,6 @@
     function closePopup() { document.getElementById('popup').style.display = 'none'; }
     
     function play(btn, url) {
-        // Direct URL assignment to fix non-playing issue
         document.getElementById('main-player').src = url;
         document.querySelectorAll('.srv-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
