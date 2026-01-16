@@ -25,6 +25,7 @@
       overflow-x: hidden; -webkit-tap-highlight-color: transparent;
     }
 
+    /* --- HEADER --- */
     header {
       position: fixed; top: 0; left: 0; right: 0; height: 70px;
       background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(15px);
@@ -34,6 +35,7 @@
     header img { height: 45px; filter: drop-shadow(0 0 5px var(--neon-glow)); }
     .menu-icon { position: absolute; left: 20px; font-size: 32px; cursor: pointer; color: var(--accent-color); }
 
+    /* --- TICKER --- */
     .news-ticker {
         margin-top: 70px; background: #1a1f27; height: 32px;
         display: flex; align-items: center; border-bottom: 1px solid var(--border-color);
@@ -45,10 +47,11 @@
     }
     @keyframes ticker { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
+    /* --- VIDEO SECTION --- */
     .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
     .video-container iframe { width: 100%; height: 100%; border: none; }
     
-    /* --- ADVANCED SERVERS --- */
+    /* --- SERVERS (ONE LINE ADVANCE) --- */
     .server-control { padding: 18px 15px; background: var(--secondary-dark); border-bottom: 1px solid var(--border-color); }
     .server-row { display: flex; justify-content: space-between; gap: 10px; }
     .srv-pill {
@@ -61,7 +64,7 @@
     .srv-title { font-size: 13px; font-weight: 700; }
     .srv-quality { font-size: 9px; color: var(--accent-color); font-weight: 800; }
 
-    /* --- ADVANCED ACTION BAR --- */
+    /* --- ACTION BAR (ANIMATED) --- */
     .action-bar {
         margin: 25px 15px; display: flex; justify-content: space-around;
         background: rgba(22, 27, 34, 0.9); border-radius: 25px; padding: 18px;
@@ -75,53 +78,21 @@
     }
     .act-item:active { transform: scale(0.9); }
     .act-item:active .icon-circle { border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-color); }
+    #viewer-count { font-size: 19px; font-weight: 800; color: var(--accent-color); }
 
-    /* --- ADVANCED POPUP (SCREENSHOT STYLE) --- */
-    .popup-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      display: none; align-items: center; justify-content: center; z-index: 10005;
-      backdrop-filter: blur(10px); animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .popup-box {
-      width: 320px; background: #1c2128; border: 1.5px solid var(--border-color);
-      border-radius: 28px; padding: 35px 25px; text-align: center;
-      position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(250, 204, 21, 0.1);
-      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    @keyframes popIn { from { transform: scale(0.7) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-
-    .popup-title { font-size: 28px; font-weight: 900; color: var(--accent-color); margin-bottom: 8px; text-shadow: 0 0 10px rgba(250,204,21,0.2); }
-    .popup-text { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
-
-    .btn-popup-join {
-      background: var(--accent-color); color: #000; padding: 14px; border-radius: 14px;
-      display: block; text-decoration: none; font-weight: 800; font-size: 16px;
-      box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3); transition: 0.3s;
-    }
-    .btn-popup-join:active { transform: scale(0.95); }
-
-    .btn-popup-close {
-      background: rgba(255,255,255,0.05); color: var(--text-primary); padding: 12px;
-      border-radius: 14px; display: block; border: 1px solid var(--border-color);
-      width: 100%; margin-top: 12px; font-weight: 600; cursor: pointer; transition: 0.3s;
-    }
-    .btn-popup-close:active { background: rgba(255,255,255,0.1); }
-
-    .close-icon { position: absolute; top: 15px; right: 20px; color: var(--text-secondary); cursor: pointer; }
-
-    /* --- SIDEBAR & STATS --- */
+    /* --- SIDEBAR (ADVANCE) --- */
     .sidebar {
       position: fixed; top: 0; left: -320px; width: 300px; height: 100%; 
       background: #0d1117; z-index: 10001; transition: 0.5s cubic-bezier(0.65, 0, 0.35, 1); 
       border-right: 1px solid var(--border-color); display: flex; flex-direction: column;
     }
-    .sidebar.open { left: 0; }
-    .sidebar-header { font-size: 26px; font-weight: 900; text-align: center; padding: 50px 0 30px; color: var(--accent-color); }
-    .sidebar-links a { display: flex; align-items: center; padding: 16px 30px; color: var(--text-secondary); text-decoration: none; font-size: 16px; font-weight: 600; }
+    .sidebar.open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+    .sidebar-header { font-size: 26px; font-weight: 900; text-align: center; padding: 50px 0 30px; color: var(--accent-color); letter-spacing: 3px; }
+    .sidebar-links a { display: flex; align-items: center; padding: 16px 30px; color: var(--text-secondary); text-decoration: none; font-size: 16px; font-weight: 600; transition: 0.3s; }
     .sidebar-links a i { margin-right: 18px; font-size: 24px; }
-    
+    .sidebar-links a:hover { background: rgba(250, 204, 21, 0.08); color: var(--accent-color); padding-left: 40px; }
+
+    /* --- VISIT CARD PRO --- */
     .stats-container { padding: 25px; border-top: 1px solid var(--border-color); margin-top: auto; }
     .visit-card-pro {
       background: linear-gradient(135deg, #1c2128 0%, #0d1117 100%);
@@ -131,6 +102,32 @@
     .visit-icon-box { width: 48px; height: 48px; background: rgba(250, 204, 21, 0.15); border-radius: 14px; display: flex; justify-content: center; align-items: center; color: var(--accent-color); }
     .visit-number { font-size: 24px; font-weight: 900; color: #fff; }
 
+    /* --- POPUP (ULTRA ADVANCE) --- */
+    .popup-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+      display: none; align-items: center; justify-content: center; z-index: 10005;
+      backdrop-filter: blur(10px); 
+    }
+    .popup-box {
+      width: 320px; background: #1c2128; border: 1.5px solid var(--border-color);
+      border-radius: 28px; padding: 40px 25px; text-align: center;
+      position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(250, 204, 21, 0.1);
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    @keyframes popIn { from { transform: scale(0.7) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .popup-title { font-size: 28px; font-weight: 900; color: var(--accent-color); margin-bottom: 8px; }
+    .popup-text { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 30px; }
+    .btn-popup-join {
+      background: var(--accent-color); color: #000; padding: 14px; border-radius: 14px;
+      display: block; text-decoration: none; font-weight: 800; font-size: 16px;
+      box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3); transition: 0.3s;
+    }
+    .btn-popup-close {
+      background: rgba(255,255,255,0.05); color: var(--text-primary); padding: 12px;
+      border-radius: 14px; display: block; border: 1px solid var(--border-color);
+      width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer;
+    }
+
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; backdrop-filter: blur(8px); }
     .overlay.show { display: block; }
   </style>
@@ -139,9 +136,8 @@
 
 <div class="popup-overlay" id="popup">
   <div class="popup-box">
-    <span class="material-icons close-icon" onclick="closePopup()">close</span>
     <div class="popup-title">Support Us!</div>
-    <div class="popup-text">Join our Telegram channel for the latest HD match links and daily updates.</div>
+    <div class="popup-text">Join our Telegram channel for the latest HD match links and live updates.</div>
     <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="btn-popup-join">Join Now</a>
     <button class="btn-popup-close" onclick="closePopup()">Already Joined</button>
   </div>
@@ -155,7 +151,7 @@
 
 <div class="news-ticker">
     <div class="ticker-content">
-        🏆 Welcome to Cricket Yoddha HD • Join Telegram for All Match Updates • High Speed Servers Active • Share with your Friends!
+        🏆 Welcome to Cricket Yoddha HD • Join Telegram for Latest Match Links • Watch Free Live Match Without Buffering • Support Us by Sharing!
     </div>
 </div>
 
@@ -175,7 +171,7 @@
         </div>
         <div class="srv-pill" onclick="play(this, 'https://cricketstan.github.io/channel-10')">
             <span class="srv-title">SERVER 3</span>
-            <span class="srv-quality">NO ADS</span>
+            <span class="srv-quality">STABLE</span>
         </div>
     </div>
 </div>
@@ -199,8 +195,8 @@
     <div class="sidebar-header">MENU</div>
     <div class="sidebar-links">
         <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank"><i class="material-icons" style="color: var(--accent-color);">telegram</i> Join Telegram</a>
-        <a href="#"><i class="material-icons">contact_support</i> Contact Us</a>
-        <a href="#"><i class="material-icons">copyright</i> Copyright</a>
+        <a href="https://www.instagram.com/cricket_yoddha?igsh=MWpoZDltdjZzYnRncw==" target="_blank"><i class="material-icons" style="color: #E1306C;">contact_page</i> Contact Us</a>
+        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank"><i class="material-icons" style="color: #0088cc;">copyright</i> Copyright</a>
     </div>
     <div class="stats-container">
         <div class="visit-card-pro">
@@ -232,7 +228,7 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // AUTO POPUP LOGIC
+    // AUTO POPUP AFTER 5 SECONDS
     window.onload = function() {
         setTimeout(function() {
             document.getElementById('popup').style.display = 'flex';
@@ -270,8 +266,9 @@
         btn.classList.add('active');
         if (window.navigator.vibrate) window.navigator.vibrate(40);
     }
+    
     function shareMe() {
-        const text = "🏏 *Watch Live Cricket HD for Free!* \nEnjoy the match on Cricket Yoddha! 🔥\n\n👉 *Watch Here:* " + window.location.href;
+        const text = "🏏 *Watch Live Cricket HD for Free!* \nNo Buffering, Best Quality on Cricket Yoddha! 🔥\n\n👉 *Watch Here:* " + window.location.href;
         if (navigator.share) {
             navigator.share({ title: 'Cricket Yoddha Live', text: text }).catch(console.error);
         } else {
