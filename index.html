@@ -51,20 +51,26 @@
     .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
     .video-container iframe { width: 100%; height: 100%; border: none; }
     
-    /* --- SERVERS (ONE LINE ADVANCE) --- */
-    .server-control { padding: 18px 15px; background: var(--secondary-dark); border-bottom: 1px solid var(--border-color); }
-    .server-row { display: flex; justify-content: space-between; gap: 10px; }
+    /* --- FIXED SERVER GRID (Proper Box Layout) --- */
+    .server-control { padding: 15px; background: var(--secondary-dark); border-bottom: 1px solid var(--border-color); }
+    .server-row { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+      gap: 10px; 
+    }
     .srv-pill {
-      flex: 1; background: var(--primary-dark); border: 1.5px solid var(--border-color);
-      border-radius: 12px; padding: 12px 5px; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      background: var(--primary-dark); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 10px 5px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; 
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      text-align: center;
     }
     .srv-pill.active { border-color: var(--accent-color); background: rgba(250, 204, 21, 0.1); box-shadow: 0 0 15px var(--neon-glow); transform: translateY(-3px); }
     .srv-pill:active { transform: scale(0.92); }
-    .srv-title { font-size: 13px; font-weight: 700; }
+    .srv-title { font-size: 11px; font-weight: 700; white-space: normal; line-height: 1.2; margin-bottom: 4px; }
     .srv-quality { font-size: 9px; color: var(--accent-color); font-weight: 800; }
 
-    /* --- ACTION BAR (ANIMATED) --- */
+    /* --- ACTION BAR --- */
     .action-bar {
         margin: 25px 15px; display: flex; justify-content: space-around;
         background: rgba(22, 27, 34, 0.9); border-radius: 25px; padding: 18px;
@@ -80,7 +86,7 @@
     .act-item:active .icon-circle { border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-color); }
     #viewer-count { font-size: 19px; font-weight: 800; color: var(--accent-color); }
 
-    /* --- SIDEBAR (ADVANCE) --- */
+    /* --- SIDEBAR --- */
     .sidebar {
       position: fixed; top: 0; left: -320px; width: 300px; height: 100%; 
       background: #0d1117; z-index: 10001; transition: 0.5s cubic-bezier(0.65, 0, 0.35, 1); 
@@ -99,10 +105,10 @@
       border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 22px;
       padding: 18px; display: flex; align-items: center; gap: 18px;
     }
-    .visit-icon-box { width: 48px; height: 48px; background: rgba(250, 204, 21, 0.15); border-radius: 14px; display: flex; justify-content: center; align-items: center; color: var(--accent-color); }
+    .visit-icon-box { width: 50px; height: 50px; background: rgba(250, 204, 21, 0.15); border-radius: 14px; display: flex; justify-content: center; align-items: center; color: var(--accent-color); }
     .visit-number { font-size: 24px; font-weight: 900; color: #fff; }
 
-    /* --- POPUP (ULTRA ADVANCE) --- */
+    /* --- POPUP --- */
     .popup-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
       display: none; align-items: center; justify-content: center; z-index: 10005;
@@ -116,18 +122,16 @@
     }
     @keyframes popIn { from { transform: scale(0.7) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
     .popup-title { font-size: 28px; font-weight: 900; color: var(--accent-color); margin-bottom: 8px; }
-    .popup-text { color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 30px; }
     .btn-popup-join {
       background: var(--accent-color); color: #000; padding: 14px; border-radius: 14px;
       display: block; text-decoration: none; font-weight: 800; font-size: 16px;
-      box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3); transition: 0.3s;
+      box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3); margin-top: 25px;
     }
     .btn-popup-close {
       background: rgba(255,255,255,0.05); color: var(--text-primary); padding: 12px;
       border-radius: 14px; display: block; border: 1px solid var(--border-color);
       width: 100%; margin-top: 15px; font-weight: 600; cursor: pointer;
     }
-
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; backdrop-filter: blur(8px); }
     .overlay.show { display: block; }
   </style>
@@ -137,7 +141,7 @@
 <div class="popup-overlay" id="popup">
   <div class="popup-box">
     <div class="popup-title">Support Us!</div>
-    <div class="popup-text">Join our Telegram channel for the latest HD match links and live updates.</div>
+    <div style="color:var(--text-secondary);font-size:14px;">Join our Telegram channel for the latest HD match links.</div>
     <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="btn-popup-join">Join Now</a>
     <button class="btn-popup-close" onclick="closePopup()">Already Joined</button>
   </div>
@@ -161,12 +165,12 @@
 
 <div class="server-control">
     <div class="server-row">
-        <div class="srv-pill active" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://allinonereborn.xyz/amit/hls2.php')">
-            <span class="srv-title">JIOHOTSTAR</span>
+        <div class="srv-pill active" onclick="play(this, 'https://allinonereborn.xyz/amit/hls2.php')">
+            <span class="srv-title">JIO HOTSTAR</span>
             <span class="srv-quality">HINDI</span>
         </div>
         <div class="srv-pill" onclick="play(this, 'https://cricketstan.github.io/channel-10')">
-            <span class="srv-title">STAR SPORTS HINDI</span>
+            <span class="srv-title">STAR SPORTS</span>
             <span class="srv-quality">HINDI</span>
         </div>
         <div class="srv-pill" onclick="play(this, 'https://manojmallah89-tech.github.io/Willow-sports/')">
@@ -228,14 +232,12 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // AUTO POPUP AFTER 5 SECONDS
     window.onload = function() {
         setTimeout(function() {
             document.getElementById('popup').style.display = 'flex';
         }, 5000); 
     };
 
-    // Live Viewers Sync
     const viewersRef = database.ref('viewers/' + WEBSITE_ID);
     database.ref('.info/connected').on('value', s => {
         if (s.val()) {
@@ -260,7 +262,9 @@
         document.getElementById('overlay').classList.toggle('show');
     }
     function closePopup() { document.getElementById('popup').style.display = 'none'; }
+    
     function play(btn, url) {
+        // Direct URL assignment to fix non-playing issue
         document.getElementById('main-player').src = url;
         document.querySelectorAll('.srv-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
