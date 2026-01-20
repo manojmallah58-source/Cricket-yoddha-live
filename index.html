@@ -2,173 +2,405 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>CRICKET YODDHA | PRO LIVE</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --primary-dark: #0D1117; 
-      --secondary-dark: #161B22; 
-      --border-color: #30363D;
-      --accent-color: #FACC15; 
-      --text-primary: #E6EDF3; 
-      --text-secondary: #8B949E;
-      --neon-glow: rgba(250, 204, 21, 0.3);
+      /* Professional Dark Palette */
+      --bg-body: #0a0e14;
+      --bg-surface: #131820;
+      --bg-glass: rgba(19, 24, 32, 0.75);
+      
+      /* Accents */
+      --primary: #FFD700; /* Gold */
+      --primary-glow: rgba(255, 215, 0, 0.25);
+      --live-red: #ef4444;
+      
+      /* Text */
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      
+      /* Borders */
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      
+      /* Dimensions */
+      --header-height: 65px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
     }
-    
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
+
+    /* Reset & Base */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
     body { 
-      margin: 0; padding: 0; background: var(--primary-dark); 
-      font-family: 'Poppins', sans-serif; color: var(--text-primary); 
+      margin: 0; padding: 0; 
+      background-color: var(--bg-body); 
+      font-family: 'Inter', sans-serif; 
+      color: var(--text-main);
       overflow-x: hidden;
+      padding-bottom: 80px; /* Space for footer/safe area */
     }
 
-    .clickable-effect { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-    .clickable-effect:active { transform: scale(0.95); filter: brightness(0.8); }
-
-    header { 
-      position: fixed; top: 0; left: 0; right: 0; height: 70px; 
-      background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(15px); 
-      display: flex; align-items: center; justify-content: center; 
-      border-bottom: 1px solid var(--border-color); z-index: 9999; 
+    /* Utility: Glass Effect */
+    .glass {
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
     }
-    header img { height: 45px; filter: drop-shadow(0 0 8px var(--neon-glow)); }
-    .menu-icon { position: absolute; left: 20px; font-size: 32px; color: var(--accent-color); }
 
-    .news-ticker { 
-      margin-top: 70px; background: #1a1f27; height: 35px; 
-      display: flex; align-items: center; overflow: hidden; 
-      border-bottom: 1px solid var(--border-color); 
+    /* --- HEADER --- */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
-    .ticker-content { 
-      display: inline-block; white-space: nowrap; padding-left: 100%; 
-      animation: ticker 20s linear infinite; color: var(--accent-color); 
-      font-size: 12px; font-weight: 700;
+    header img { height: 42px; filter: drop-shadow(0 0 10px var(--primary-glow)); }
+    .btn-menu { 
+      position: absolute; left: 16px; 
+      background: rgba(255,255,255,0.05); 
+      border-radius: 50%; width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-menu i { color: var(--primary); font-size: 24px; }
+    .btn-menu:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
+
+    /* --- TICKER --- */
+    .ticker-wrap {
+      margin-top: var(--header-height);
+      background: linear-gradient(90deg, #1e1e24 0%, #161b22 100%);
+      height: 36px; display: flex; align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      overflow: hidden; position: relative;
+    }
+    .breaking-badge {
+      background: var(--live-red);
+      color: #fff; font-size: 10px; font-weight: 800;
+      padding: 0 12px; height: 100%; display: flex; align-items: center;
+      position: absolute; left: 0; z-index: 2;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+    }
+    .ticker-content {
+      display: inline-block; white-space: nowrap;
+      animation: ticker 25s linear infinite;
+      color: #e2e8f0; font-size: 12px; font-weight: 500;
+      padding-left: 100%;
     }
     @keyframes ticker { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-    .video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; border-bottom: 1px solid var(--border-color); }
-    .video-container iframe { width: 100%; height: 100%; border: none; }
+    /* --- VIDEO PLAYER --- */
+    .player-wrapper {
+      position: relative; width: 100%;
+      background: #000;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    }
+    /* Glow effect behind player */
+    .player-wrapper::before {
+      content: ''; position: absolute; inset: -1px;
+      background: linear-gradient(45deg, transparent, var(--primary-glow), transparent);
+      z-index: -1; opacity: 0.5;
+    }
+    .aspect-ratio { position: relative; width: 100%; padding-bottom: 56.25%; /* 16:9 */ }
+    .aspect-ratio iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-    .server-control { padding: 15px; background: var(--secondary-dark); }
-    .server-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .srv-pill { background: var(--primary-dark); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 10px 5px; display: flex; flex-direction: column; align-items: center; }
-    .srv-pill.active { border-color: var(--accent-color); background: rgba(250, 204, 21, 0.1); }
-    .srv-title { font-size: 9px; font-weight: 800; color: #fff; text-transform: uppercase; }
+    /* --- CONTROLS SECTION --- */
+    .controls-area { padding: 20px 16px; }
 
-    .action-bar { margin: 15px; display: flex; justify-content: space-around; background: rgba(22, 27, 34, 0.9); border-radius: 20px; padding: 15px; border: 1px solid var(--border-color); }
-    .act-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: inherit; }
-    .icon-circle { width: 55px; height: 55px; border-radius: 50%; background: #1a1f27; display: flex; justify-content: center; align-items: center; border: 2px solid var(--border-color); }
-
-    .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0d1117; z-index: 10001; transition: 0.4s cubic-bezier(0.65, 0, 0.35, 1); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
-    .sidebar.open { left: 0; }
-    .menu-header { font-size: 22px; font-weight: 800; text-align: center; padding: 40px 0 20px; color: var(--accent-color); }
-    .sidebar a { display: flex; align-items: center; padding: 16px 25px; color: var(--text-secondary); text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(48,54,61,0.2); }
+    /* Server Cards */
+    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; }
+    .server-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
     
-    .stats-container { margin-top: auto; padding: 20px; border-top: 1px solid var(--border-color); background: #0d1117; }
-    .stats-box { 
-        background: linear-gradient(135deg, rgba(250, 204, 21, 0.1), #161B22); 
-        border: 1px solid rgba(250, 204, 21, 0.2); border-radius: 16px; 
-        padding: 15px; display: flex; align-items: center; gap: 12px; 
+    .server-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      text-align: center; cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative; overflow: hidden;
     }
-
-    .popup-overlay { 
-        position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); 
-        display: none; align-items: center; justify-content: center; 
-        z-index: 10005; backdrop-filter: blur(8px); 
+    .server-card.active {
+      border-color: var(--primary);
+      background: radial-gradient(circle at center, rgba(250, 204, 21, 0.08), transparent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-    .popup-box { 
-        width: 85%; max-width: 330px; background: #1c2128; 
-        border: 1px solid var(--border-color); border-radius: 24px; 
-        padding: 35px 20px; text-align: center; position: relative; 
-        animation: popIn 0.4s ease-out; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .server-card.active .srv-name { color: var(--primary); }
     
-    .popup-close-icon { position: absolute; top: 15px; right: 18px; color: #8b949e; font-size: 22px; cursor: pointer; }
-    .popup-header { font-size: 30px; font-weight: 800; color: var(--accent-color); margin-bottom: 8px; letter-spacing: -0.5px; }
-    .popup-subtext { color: var(--text-secondary); font-size: 14px; margin-bottom: 25px; line-height: 1.4; font-weight: 500; }
-    .btn-popup-join { background: var(--accent-color); color: #000; width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; text-decoration: none; display: block; font-size: 16px; margin-bottom: 12px; border: none; }
-    .btn-popup-close { background: #161b22; color: #fff; border: 1px solid var(--border-color); width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer; }
+    .srv-name { display: block; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px; color: #fff; margin-bottom: 4px; }
+    .srv-lang { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 500; }
+    
+    /* Live Indicator inside card */
+    .live-dot {
+      width: 6px; height: 6px; background: #22c55e; border-radius: 50%;
+      position: absolute; top: 6px; right: 6px;
+      box-shadow: 0 0 6px #22c55e;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 10000; }
-    .overlay.show { display: block; }
+    /* --- STATS & ACTIONS --- */
+    .action-panel {
+      display: flex; gap: 12px; 
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); padding: 16px;
+      align-items: center; justify-content: space-between;
+    }
+    
+    .stat-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .stat-val { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-val.live-color { color: var(--live-red); text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+
+    .btn-action {
+      flex: 1; display: flex; flex-direction: column; align-items: center; 
+      background: none; border: none; cursor: pointer; color: inherit; text-decoration: none;
+    }
+    .btn-icon-box {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 6px; transition: 0.2s;
+    }
+    .btn-action:active .btn-icon-box { transform: scale(0.92); background: rgba(255,255,255,0.1); }
+    .btn-label { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      position: fixed; inset: 0; pointer-events: none; z-index: 10001;
+    }
+    .sidebar-panel {
+      position: absolute; top: 0; left: 0; bottom: 0; width: 280px;
+      background: #0d1117; border-right: 1px solid var(--border-subtle);
+      transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; flex-direction: column; pointer-events: auto;
+    }
+    .sidebar.open .sidebar-panel { transform: translateX(0); }
+    .sidebar-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.8);
+      opacity: 0; transition: opacity 0.3s; pointer-events: auto;
+    }
+    .sidebar.open .sidebar-overlay { opacity: 1; }
+    .sidebar.closed .sidebar-overlay { pointer-events: none; }
+
+    .nav-header { padding: 40px 20px 20px; text-align: center; border-bottom: 1px solid var(--border-subtle); }
+    .nav-header h2 { margin: 0; color: var(--primary); font-family: 'Poppins'; font-size: 20px; }
+    
+    .nav-links { padding: 20px 0; display: flex; flex-direction: column; }
+    .nav-item {
+      padding: 14px 24px; color: #cbd5e1; text-decoration: none; font-weight: 500;
+      display: flex; align-items: center; gap: 16px; border-left: 3px solid transparent;
+      transition: 0.2s;
+    }
+    .nav-item i { color: var(--text-muted); }
+    .nav-item:active { background: rgba(255,255,255,0.03); border-left-color: var(--primary); }
+
+    /* --- POPUP --- */
+    .popup-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10005;
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .popup-card {
+      width: 85%; max-width: 320px; background: #181d26;
+      border: 1px solid var(--border-subtle); border-radius: 24px;
+      padding: 30px 24px; text-align: center; position: relative;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    
+    .btn-main {
+      background: var(--primary); color: #000; width: 100%; padding: 14px;
+      border-radius: 12px; font-weight: 700; text-decoration: none; display: block;
+      margin: 16px 0 10px; font-family: 'Poppins'; border: none;
+    }
+    .btn-sec {
+      background: transparent; color: var(--text-muted); width: 100%; padding: 10px;
+      font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+    }
   </style>
 </head>
 <body>
 
-<div class="popup-overlay" id="popup">
-    <div class="popup-box">
-        <span class="material-icons popup-close-icon" onclick="closePopup()">close</span>
-        <div class="popup-header">Support Us!</div>
-        <div class="popup-subtext">Join our Telegram for more link & update</div>
-        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="btn-popup-join clickable-effect">Join Now</a>
-        <button class="btn-popup-close clickable-effect" onclick="closePopup()">Already Joined</button>
+<!-- POPUP -->
+<div class="popup-backdrop" id="popup">
+    <div class="popup-card">
+        <span class="material-icons" style="position:absolute; top:15px; right:15px; color:#64748b; cursor:pointer;" onclick="closePopup()">close</span>
+        <div style="width:60px; height:60px; background:rgba(250, 204, 21, 0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+            <i class="material-icons" style="font-size:30px; color:var(--primary);">telegram</i>
+        </div>
+        <h3 style="margin:0 0 8px; color:#fff; font-family:'Poppins';">Don't Miss Out!</h3>
+        <p style="margin:0; font-size:13px; color:var(--text-muted); line-height:1.5;">Join our Telegram channel for backup links & instant match updates.</p>
+        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="btn-main">Join Channel</a>
+        <button class="btn-sec" onclick="closePopup()">I've already joined</button>
     </div>
 </div>
 
-<header>
-  <span class="material-icons menu-icon clickable-effect" onclick="toggleSidebar()">menu</span>
-  <img src="https://i.ibb.co/HLkW7zJV/ei-1765534270242-removebg-preview.png" alt="Logo">
-</header>
-
-<div class="news-ticker">
-    <div class="ticker-content">
- EVERYONE MUST SHARE THE LINK 🔗 | JOIN TELEGRAM FOR BACKUP LINKS 📲 | WATCH HD LIVE STREAMING WITHOUT BUFFERING 🏏🔥    </div>
-</div>
-
-<div class="video-container">
-  <iframe id="main-player" src="https://cinearena.live/a-iframe/?id=jio-hotstar" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-</div>
-
-<div class="server-control">
-    <div class="server-row">
-        <div class="srv-pill active clickable-effect" onclick="play(this, 'https://cinearena.live/a-iframe/?id=jio-hotstar')">
-            <span class="srv-title">JIO HOTSTAR</span>
-            <span style="font-size:7px; color:var(--accent-color); margin-top:3px;">HINDI HD</span>
+<!-- SIDEBAR -->
+<div class="sidebar closed" id="sidebar">
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-panel">
+        <div class="nav-header">
+            <h2>CRICKET YODDHA</h2>
+            <div style="font-size:10px; color:var(--text-muted); letter-spacing:2px; margin-top:5px;">PRO EDITION</div>
         </div>
-        <div class="srv-pill clickable-effect" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://amg01269-amg01269c1-sportstribal-emea-5204.playouts.now.amagi.tv/ts-eu-w1-n2/playlist/amg01269-willowtvfast-willowplus-sportstribalemea/playlist.m3u8')">
-          <span class="srv-title">STAR SPORTS</span>
-            <span style="font-size:7px; color:var(--accent-color); margin-top:3px;">Hindi</span>
-        </div>
-        <div class="srv-pill clickable-effect" onclick="play(this, 'https://crickettv.site/willow')">
-            <span class="srv-title">CRICBUZZ</span>
-            <span style="font-size:7px; color:var(--accent-color); margin-top:3px;">ENGLISH</span>
-        </div>
-    </div>
-</div>
-
-<div class="action-bar">
-    <div class="act-item clickable-effect"><div class="icon-circle"><span id="viewer-count" style="font-weight:800; color:var(--accent-color); font-size:20px;">0</span></div><span style="font-size:11px; font-weight:700;">Watching</span></div>
-    <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="act-item clickable-effect"><div class="icon-circle" style="color:#0088cc"><i class="material-icons" style="font-size:30px;">send</i></div><span style="font-size:11px; font-weight:700;">Telegram</span></a>
-    <div class="act-item clickable-effect" onclick="shareMe()"><div class="icon-circle"><i class="material-icons" style="font-size:30px;">share</i></div><span style="font-size:11px; font-weight:700;">Share</span></div>
-</div>
-
-<div class="sidebar" id="sidebar">
-    <div class="menu-header">CRICKET YODDHA</div>
-    <div style="flex-grow:1">
-        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="clickable-effect"><i class="material-icons" style="color:var(--accent-color); margin-right:15px;">telegram</i> Join Telegram</a>
-        <a href="https://www.instagram.com/cricket_yoddha?igsh=MWpoZDltdjZzYnRncw==" target="_blank" class="clickable-effect"><i class="material-icons" style="color:#E1306C; margin-right:15px;">contact_page</i> Contact Us</a>
-        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="clickable-effect"><i class="material-icons" style="color:#0088cc; margin-right:15px;">copyright</i> Copyright</a>
-    </div>
-    <div class="stats-container">
-        <div class="stats-box">
-            <i class="material-icons" style="color:var(--accent-color); font-size:30px;">today</i>
-            <div>
-                <span style="font-size:10px; color:var(--text-secondary); font-weight:600;">TODAY'S VISITS</span><br>
-                <span id="total-views-count" style="font-size:20px; font-weight:800;">0</span>
+        <div class="nav-links">
+            <a href="https://t.me/+rwZKMV0-L8wyOTll" class="nav-item">
+                <i class="material-icons">telegram</i> Telegram
+            </a>
+            <a href="https://www.instagram.com/cricket_yoddha?igsh=MWpoZDltdjZzYnRncw==" class="nav-item">
+                <i class="material-icons">photo_camera</i> Instagram
+            </a>
+            <div class="nav-item" style="margin-top:auto; border-top:1px solid var(--border-subtle);">
+                <i class="material-icons">analytics</i>
+                <div>
+                    <span style="font-size:10px; display:block; color:var(--text-muted);">DAILY VISITS</span>
+                    <span id="sidebar-total-views" style="font-weight:700; color:#fff;">Loading...</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
+<!-- HEADER -->
+<header class="glass">
+    <div class="btn-menu" onclick="toggleSidebar()">
+        <i class="material-icons">menu</i>
+    </div>
+    <img src="https://i.ibb.co/HLkW7zJV/ei-1765534270242-removebg-preview.png" alt="Cricket Yoddha">
+</header>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+    <div class="breaking-badge">LIVE UPDATES</div>
+    <div class="ticker-content">
+        🏏 LIVE: INDIA vs AUSTRALIA - 3rd TEST | 🔗 SHARE THE LINK WITH FRIENDS | ⚠️ JOIN TELEGRAM FOR BACKUP STREAMS | NO BUFFERING HD STREAM 🔥
+    </div>
+</div>
+
+<!-- PLAYER -->
+<div class="player-wrapper">
+    <div class="aspect-ratio">
+        <iframe id="main-player" src="https://cinearena.live/a-iframe/?id=jio-hotstar" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls-area">
+    
+    <!-- Stats Panel -->
+    <div class="action-panel" style="margin-bottom: 24px;">
+        <div class="stat-item">
+            <span class="material-icons" style="font-size:18px; color:var(--live-red); margin-bottom:4px;">visibility</span>
+            <span id="viewer-count" class="stat-val live-color">0</span>
+            <span class="stat-label">Live Viewers</span>
+        </div>
+        <div style="width:1px; height:30px; background:var(--border-subtle);"></div>
+        <div class="stat-item">
+            <span class="material-icons" style="font-size:18px; color:var(--primary); margin-bottom:4px;">leaderboard</span>
+            <span id="total-views-count" class="stat-val">0</span>
+            <span class="stat-label">Today's Hits</span>
+        </div>
+    </div>
+
+    <!-- Servers -->
+    <div class="section-title">Select Server Quality</div>
+    <div class="server-grid">
+        <div class="server-card active" onclick="play(this, 'https://cinearena.live/a-iframe/?id=jio-hotstar')">
+            <div class="live-dot"></div>
+            <span class="srv-name">JIO HOTSTAR</span>
+            <span class="srv-lang">Hindi HD</span>
+        </div>
+        <div class="server-card" onclick="play(this, 'https://cricket-yoddha.vercel.app/?url=https://amg01269-amg01269c1-sportstribal-emea-5204.playouts.now.amagi.tv/ts-eu-w1-n2/playlist/amg01269-willowtvfast-willowplus-sportstribalemea/playlist.m3u8')">
+            <div class="live-dot"></div>
+            <span class="srv-name">STAR SPORTS</span>
+            <span class="srv-lang">Hindi LQ</span>
+        </div>
+        <div class="server-card" onclick="play(this, 'https://crickettv.site/willow')">
+            <div class="live-dot"></div>
+            <span class="srv-name">CRICBUZZ</span>
+            <span class="srv-lang">English</span>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="section-title">Quick Actions</div>
+    <div class="action-panel" style="justify-content: space-around; padding: 12px;">
+        <a href="https://t.me/+rwZKMV0-L8wyOTll" target="_blank" class="btn-action">
+            <div class="btn-icon-box" style="color:#38bdf8"><i class="material-icons">telegram</i></div>
+            <span class="btn-label">Join TG</span>
+        </a>
+        <button class="btn-action" onclick="shareMe()">
+            <div class="btn-icon-box" style="color:#FACC15"><i class="material-icons">share</i></div>
+            <span class="btn-label">Share App</span>
+        </button>
+        <button class="btn-action" onclick="location.reload()">
+            <div class="btn-icon-box" style="color:#a78bfa"><i class="material-icons">refresh</i></div>
+            <span class="btn-label">Refresh</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- FIREBASE SCRIPTS (SAME ROBUST LOGIC) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
+    // --- UI FUNCTIONS ---
+    function toggleSidebar() {
+        const sb = document.getElementById('sidebar');
+        if (sb.classList.contains('closed')) {
+            sb.classList.remove('closed');
+            sb.classList.add('open');
+        } else {
+            sb.classList.remove('open');
+            sb.classList.add('closed');
+        }
+    }
+    
+    function closePopup() { 
+        document.getElementById('popup').style.display = 'none'; 
+    }
+    
+    function play(element, url) {
+        if (navigator.vibrate) navigator.vibrate(30);
+        
+        // UI Update
+        document.querySelectorAll('.server-card').forEach(c => c.classList.remove('active'));
+        element.classList.add('active');
+        
+        // Player Update
+        document.getElementById('main-player').src = url;
+    }
+
+    function shareMe() {
+        if (navigator.vibrate) navigator.vibrate(30);
+        const text = "⚡ Watch Live Cricket HD Free on CRICKET YODDHA! 🏏\nNo Buffering | Hindi Commentary 🔥\nLink: " + window.location.href;
+        if (navigator.share) { 
+            navigator.share({ title: 'Cricket Yoddha Live', text: text });
+        } else { 
+            navigator.clipboard.writeText(text); 
+            alert("Link Copied to Clipboard!"); 
+        }
+    }
+
+    // --- POPUP DELAY ---
+    window.onload = function() {
+        setTimeout(() => { document.getElementById('popup').style.display = 'flex'; }, 6000);
+    };
+
+    // --- FIREBASE LOGIC (The Fixed Version) ---
     const firebaseConfig = {
       apiKey: "AIzaSyA-vR50CMDYJVHApJir-6fmgRqhFiqQDU8",
       authDomain: "my-website-cricket.firebaseapp.com",
@@ -179,67 +411,72 @@
       appId: "1:664276981494:web:4d6b5cd5c55f6b6b18fed7"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+       firebase.initializeApp(firebaseConfig);
+    }
     const database = firebase.database();
     const CHANNEL_ID = "channel_1";
 
-    window.onload = function() { 
-        setTimeout(() => { document.getElementById('popup').style.display = 'flex'; }, 5000); 
-    };
-
-    // --- ENHANCED LIVE VIEWERS LOGIC ---
+    // 1. Live Heartbeat System
     const connectedRef = database.ref('.info/connected');
     const viewersRef = database.ref('live_viewers/' + CHANNEL_ID);
 
     connectedRef.on('value', (snap) => {
         if (snap.val() === true) {
-            // Naya entry tabhi banega jab connection active ho
             const myPresence = viewersRef.push();
-            
-            // Sabse important: Disconnect hone par node delete
             myPresence.onDisconnect().remove();
             
-            // Timestamp add kar rahe hain taaki agar koi "hang" ho toh identify ho sake
-            myPresence.set(firebase.database.ServerValue.TIMESTAMP);
+            // Set initial time
+            myPresence.set(Date.now());
+
+            // Heartbeat loop every 4s
+            const intervalId = setInterval(() => {
+                myPresence.set(Date.now());
+            }, 4000);
+
+            // Cleanup
+            window.addEventListener('beforeunload', () => {
+                clearInterval(intervalId);
+            });
         }
     });
 
-    // Real-time Update display
+    // 2. Count Active Users (Filter out old timestamps)
     viewersRef.on('value', (snapshot) => {
-        let count = snapshot.numChildren() || 0;
+        const now = Date.now();
+        let activeCount = 0;
         
-        // Final Fix: Agar database mein kachra hai, toh hum sirf unhe ginte hain 
-        // jo pichle 1 minute mein active hue hon (optional but keeping it simple for now)
-        document.getElementById('viewer-count').innerText = count >= 1000 ? (count/1000).toFixed(1)+'K' : count;
+        snapshot.forEach((childSnapshot) => {
+            const lastActiveTime = childSnapshot.val();
+            // Allow 10-12s buffer for network lag
+            if (now - lastActiveTime < 12000) { 
+                activeCount++;
+            } else {
+                // Optional: Clean up dead nodes locally to avoid re-looping them next time
+                // (Server side cleanup is safer but this helps client performance)
+            }
+        });
+
+        // Format number (1.2K)
+        const displayCount = activeCount >= 1000 ? (activeCount/1000).toFixed(1)+'K' : activeCount;
+        document.getElementById('viewer-count').innerText = displayCount;
     });
 
-    // --- TODAY'S VISITS ---
-    const today = new Date().toDateString();
-    const visitsRef = database.ref('total_visits/' + CHANNEL_ID + '/' + today);
+    // 3. Total Visits Logic
+    const todayStr = new Date().toDateString();
+    const visitsRef = database.ref('total_visits/' + CHANNEL_ID + '/' + todayStr);
     
-    if (!sessionStorage.getItem('visited')) {
+    if (!sessionStorage.getItem('visited_today')) {
         visitsRef.transaction(current => (current || 0) + 1);
-        sessionStorage.setItem('visited', 'true');
+        sessionStorage.setItem('visited_today', 'true');
     }
 
     visitsRef.on('value', s => { 
-        document.getElementById('total-views-count').innerText = s.val() || '0'; 
+        const val = s.val() || '0';
+        document.getElementById('total-views-count').innerText = val;
+        document.getElementById('sidebar-total-views').innerText = val;
     });
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
-    function closePopup() { document.getElementById('popup').style.display = 'none'; }
-    function play(btn, url) { 
-        if (navigator.vibrate) navigator.vibrate(40);
-        document.getElementById('main-player').src = url; 
-        document.querySelectorAll('.srv-pill').forEach(p => p.classList.remove('active')); 
-        btn.classList.add('active'); 
-    }
-    function shareMe() {
-        if (navigator.vibrate) navigator.vibrate(40);
-        const text = "Everyone should share the link! 🏏 Watch Live Cricket HD for Free on Cricket Yoddha! 🔥\n" + window.location.href;
-        if (navigator.share) { navigator.share({ title: 'Live Cricket', text: text }); }
-        else { navigator.clipboard.writeText(text); alert("Link Copied!"); }
-    }
 </script>
 </body>
 </html>
