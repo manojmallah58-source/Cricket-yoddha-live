@@ -2,54 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Yoddha | Live Stream</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cricket Yoddha | Live</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
-    
     <style>
-        body { margin: 0; background: #0a0a0a; font-family: 'Segoe UI', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        body { margin: 0; background: #050505; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        #player-container { width: 95%; max-width: 900px; }
-        .plyr--video { border-radius: 12px; border: 1px solid #222; }
+        /* Premium Player Container */
+        .wrapper { max-width: 900px; margin: 20px auto; padding: 0 10px; }
+        .player-wrapper { position: relative; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        
+        /* Join Button Design */
+        .join-cta { 
+            display: block; width: 90%; max-width: 300px; margin: 25px auto; padding: 14px; 
+            background: linear-gradient(90deg, #0088cc, #005f8f); color: white; 
+            text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; 
+            font-size: 16px; border: none; box-shadow: 0 4px 15px rgba(0,136,204,0.3);
+        }
 
-        .telegram-btn { 
-            display: inline-block; margin-top: 20px; padding: 12px 30px; background: #0088cc; 
-            color: #fff; text-decoration: none; border-radius: 50px; font-weight: 600; 
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.3);
-        }
-        .telegram-btn:hover { transform: translateY(-2px); background: #0099e5; }
-
-        /* Professional Popup */
-        #overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); 
-            display: flex; align-items: center; justify-content: center; z-index: 9999; 
-            opacity: 0; visibility: hidden; transition: 0.4s;
-        }
-        .modal { 
-            background: #151515; padding: 40px; border-radius: 20px; text-align: center; 
-            max-width: 350px; width: 90%; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .modal h2 { margin: 0 0 15px; color: #0088cc; }
-        .modal p { color: #ccc; line-height: 1.5; margin-bottom: 25px; }
-        .btn-main { display: block; width: 100%; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; background: #0088cc; color: white; }
-        .btn-close { background: transparent; color: #666; margin-top: 15px; border: none; cursor: pointer; }
+        /* Popup Styles */
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .modal { background: #111; padding: 30px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; border: 1px solid #333; }
+        .modal h2 { margin: 0 0 10px; color: #0088cc; }
+        .modal p { font-size: 14px; color: #aaa; margin-bottom: 20px; }
+        #popupJoinBtn { background: #0088cc; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="player-container">
-    <video id="plyr-player" controls playsinline></video>
-    <center><a href="https://t.me/+WU7Ei37dxuJkODk1" target="_blank" class="telegram-btn">Join Telegram Channel</a></center>
+<div class="wrapper">
+    <div class="player-wrapper">
+        <video id="player" controls playsinline></video>
+    </div>
+    <a href="https://t.me/+WU7Ei37dxuJkODk1" class="join-cta">Join Telegram for Links</a>
 </div>
 
-<!-- Popup Structure -->
+<!-- Popup -->
 <div id="overlay">
     <div class="modal">
         <h2>Cricket Yoddha</h2>
-        <p>Don't miss the action! Join our Telegram channel for high-quality live links and match updates.</p>
-        <button id="joinBtn" class="btn-main">Join Now</button>
-        <button id="closeBtn" class="btn-close">Maybe Later</button>
+        <p>Get instant notifications for all live match links and updates on our official channel.</p>
+        <button id="popupJoinBtn">Join Channel Now</button>
     </div>
 </div>
 
@@ -57,40 +50,33 @@
 <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
 
 <script>
-    const video = document.getElementById('plyr-player');
-    const videoSrc = new URLSearchParams(window.location.search).get('url');
+    const video = document.getElementById('player');
+    const source = new URLSearchParams(window.location.search).get('url');
 
-    // Player Init
-    if (videoSrc) {
+    // Fast Load logic
+    if (source) {
         if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoSrc);
+            const hls = new Hls({ lowLatencyMode: true }); // Fast loading
+            hls.loadSource(source);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 const qualities = hls.levels.map(l => l.height);
                 new Plyr(video, {
-                    autoplay: true,
                     settings: ['quality', 'speed'],
-                    quality: { default: qualities[0], options: qualities, forced: true, onChange: (q) => hls.levels.forEach((l, i) => { if(l.height === q) hls.currentLevel = i; }) }
+                    quality: { default: qualities[0], options: qualities, forced: true, onChange: (q) => hls.levels.forEach((l,i) => { if(l.height===q) hls.currentLevel=i; }) }
                 });
             });
         }
     }
 
-    // 5-Second Delay Popup
+    // Popup Logic: 5 seconds delay
     window.addEventListener("load", () => {
         setTimeout(() => {
-            const overlay = document.getElementById('overlay');
-            overlay.style.opacity = "1";
-            overlay.style.visibility = "visible";
-        }, 5000); // 5000ms = 5 seconds
+            document.getElementById('overlay').style.display = 'flex';
+        }, 5000);
     });
 
-    document.getElementById('joinBtn').onclick = () => window.open("https://t.me/+WU7Ei37dxuJkODk1", "_blank");
-    document.getElementById('closeBtn').onclick = () => {
-        document.getElementById('overlay').style.opacity = "0";
-        setTimeout(() => document.getElementById('overlay').style.visibility = "hidden", 400);
-    };
+    document.getElementById('popupJoinBtn').onclick = () => window.open("https://t.me/+WU7Ei37dxuJkODk1", "_blank");
 </script>
 
 </body>
