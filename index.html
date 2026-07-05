@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CricWorld Player</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
+    
+    <style>
+        :root { --primary: #0088cc; --bg: #000; }
+        body { margin: 0; background: var(--bg); font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        #player-container { width: 95%; max-width: 900px; }
+        #plyr-player { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; }
+        
+        .telegram-btn { 
+            display: block; width: 220px; margin: 20px auto; padding: 12px;
+            background: var(--primary); color: #fff; text-align: center;
+            border-radius: 8px; text-decoration: none; font-weight: bold; cursor: pointer;
+        }
 
+        /* Popup Styles */
+        #popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .modal { background: #1e1e1e; padding: 25px; border-radius: 15px; text-align: center; color: white; width: 85%; max-width: 320px; }
+        .modal button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; }
+        #joinBtn { background: var(--primary); color: white; }
+    </style>
+</head>
+<body>
+
+<div id="player-container">
+    <video id="plyr-player" controls playsinline></video>
+    <a href="https://t.me/+c9xIhd5Hcz5kNDQ1" target="_blank" class="telegram-btn">Join Telegram</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
+
+<script>
+    const video = document.getElementById('plyr-player');
+    const videoSrc = new URLSearchParams(window.location.search).get('url');
+
+    function initPlayer() {
+        if (!videoSrc) return;
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                new Plyr(video, { autoplay: true, muted: true });
+            });
+        } else {
+            video.src = videoSrc;
+            new Plyr(video, { autoplay: true, muted: true });
+        }
+    }
+
+    // Popup Logic
+    window.addEventListener("load", () => {
+        initPlayer();
+        const overlay = document.createElement('div');
+        overlay.id = 'popup-overlay';
+        overlay.innerHTML = `
+            <div class="modal">
+                <h2>Support Us!</h2>
+                <p>Stay updated with our latest streams.</p>
+                <button id="joinBtn">Join Telegram</button>
+                <button id="closeBtn">Close</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        
+        document.getElementById('joinBtn').onclick = () => window.open("https://t.me/+c9xIhd5Hcz5kNDQ1", "_blank");
+        document.getElementById('closeBtn').onclick = () => overlay.remove();
+    });
+</script>
+
+</body>
+</html>
