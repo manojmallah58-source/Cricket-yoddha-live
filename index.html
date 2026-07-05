@@ -3,29 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cricket Yoddha | Live</title>
+    <title>Cricket Yoddha | Live Stream</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css">
     <style>
         body { margin: 0; background: #050505; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .wrapper { width: 100%; max-width: 900px; margin: 20px auto; }
+        .player-wrapper { position: relative; background: #000; border-radius: 12px; overflow: hidden; }
         
-        /* Premium Player Container */
-        .wrapper { max-width: 900px; margin: 20px auto; padding: 0 10px; }
-        .player-wrapper { position: relative; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        /* Premium Popup */
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .modal { background: #161616; padding: 35px; border-radius: 24px; width: 85%; max-width: 340px; text-align: center; border: 1px solid #333; }
+        .modal h2 { margin: 0 0 15px; color: #0088cc; font-size: 22px; }
+        .modal p { font-size: 15px; color: #ccc; margin-bottom: 25px; line-height: 1.6; }
         
-        /* Join Button Design */
-        .join-cta { 
-            display: block; width: 90%; max-width: 300px; margin: 25px auto; padding: 14px; 
-            background: linear-gradient(90deg, #0088cc, #005f8f); color: white; 
-            text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; 
-            font-size: 16px; border: none; box-shadow: 0 4px 15px rgba(0,136,204,0.3);
-        }
-
-        /* Popup Styles */
-        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .modal { background: #111; padding: 30px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; border: 1px solid #333; }
-        .modal h2 { margin: 0 0 10px; color: #0088cc; }
-        .modal p { font-size: 14px; color: #aaa; margin-bottom: 20px; }
-        #popupJoinBtn { background: #0088cc; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-join { background: #0088cc; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; display: block; margin-bottom: 12px; }
+        .btn-already { background: transparent; color: #666; border: 1px solid #444; padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -34,15 +26,14 @@
     <div class="player-wrapper">
         <video id="player" controls playsinline></video>
     </div>
-    <a href="https://t.me/+WU7Ei37dxuJkODk1" class="join-cta">Join Telegram for Links</a>
 </div>
 
-<!-- Popup -->
 <div id="overlay">
     <div class="modal">
-        <h2>Cricket Yoddha</h2>
-        <p>Get instant notifications for all live match links and updates on our official channel.</p>
-        <button id="popupJoinBtn">Join Channel Now</button>
+        <h2>Join Cricket Yoddha</h2>
+        <p>To watch uninterrupted live streams, please join our official Telegram channel for latest match links and real-time updates.</p>
+        <button id="btnJoin" class="btn-join">Join Telegram Now</button>
+        <button id="btnAlready" class="btn-already">I Have Already Joined</button>
     </div>
 </div>
 
@@ -53,10 +44,10 @@
     const video = document.getElementById('player');
     const source = new URLSearchParams(window.location.search).get('url');
 
-    // Fast Load logic
+    // Fast Load Player
     if (source) {
         if (Hls.isSupported()) {
-            const hls = new Hls({ lowLatencyMode: true }); // Fast loading
+            const hls = new Hls({ lowLatencyMode: true });
             hls.loadSource(source);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -69,14 +60,13 @@
         }
     }
 
-    // Popup Logic: 5 seconds delay
+    // Popup Logic: 5 Seconds Delay
     window.addEventListener("load", () => {
-        setTimeout(() => {
-            document.getElementById('overlay').style.display = 'flex';
-        }, 5000);
+        setTimeout(() => { document.getElementById('overlay').style.display = 'flex'; }, 5000);
     });
 
-    document.getElementById('popupJoinBtn').onclick = () => window.open("https://t.me/+WU7Ei37dxuJkODk1", "_blank");
+    document.getElementById('btnJoin').onclick = () => window.open("https://t.me/+WU7Ei37dxuJkODk1", "_blank");
+    document.getElementById('btnAlready').onclick = () => { document.getElementById('overlay').style.display = 'none'; };
 </script>
 
 </body>
