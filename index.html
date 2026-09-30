@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- Shaka Player UI CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
 
 <style>
 *,*::before,*::after{
@@ -296,6 +296,16 @@ video.mode-cover{
 .shaka-spinner-container{
   display:none!important
 }
+
+@media(max-width:380px){
+  .fit-pill{
+    font-size:9px;
+    padding:2px 5px
+  }
+  .sp-btn{
+    padding:0 5px!important
+  }
+}
 </style>
 </head>
 
@@ -359,14 +369,13 @@ video.mode-cover{
 </div>
 
 
-<!-- Shaka Player Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.compiled.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
 
 <script>
 (function(){
 
 "use strict";
+
 
 /* =========================================
    DOM
@@ -401,6 +410,12 @@ function getStreamInfo(){
 
     var keysParam = params.get("keys");
 
+    /*
+      FORMAT:
+
+      ?url=MPD&keys=KID:KEY
+    */
+
     if(keysParam){
 
       var decodedKeys = decodeURIComponent(keysParam);
@@ -417,6 +432,13 @@ function getStreamInfo(){
         key: keyParts[1]
       };
     }
+
+
+    /*
+      BACKWARD COMPATIBLE FORMAT:
+
+      ?url=MPD|KID:KEY
+    */
 
     var parts = decodedUrl.split("|");
 
@@ -1003,12 +1025,20 @@ async function startPlayer(){
   }
 
 
+  /*
+    Shaka player
+  */
+
   var player =
     new shaka.Player();
 
 
   await player.attach($vid);
 
+
+  /*
+    UI
+  */
 
   new shaka.ui.Overlay(
     player,
@@ -1040,6 +1070,10 @@ async function startPlayer(){
   });
 
 
+  /*
+    Inject Fit / Fill / Zoom
+  */
+
   var injectCount = 0;
 
 
@@ -1064,6 +1098,10 @@ async function startPlayer(){
 
   })();
 
+
+  /* =====================================
+     DRM
+  ===================================== */
 
   if(streamInfo.noDrm){
 
@@ -1092,6 +1130,10 @@ async function startPlayer(){
     });
   }
 
+
+  /* =====================================
+     PLAYER CONFIG
+  ===================================== */
 
   var restrictionsRelaxed =
     false;
@@ -1265,6 +1307,10 @@ async function startPlayer(){
   );
 
 
+  /* =====================================
+     STATE
+  ===================================== */
+
   var refreshing =
     false;
 
@@ -1283,6 +1329,10 @@ async function startPlayer(){
   var stallTmr =
     null;
 
+
+  /* =====================================
+     USER INTERACTION
+  ===================================== */
 
   function unmuteOnce(){
 
@@ -1320,6 +1370,10 @@ async function startPlayer(){
   );
 
 
+  /* =====================================
+     LIVE EDGE
+  ===================================== */
+
   function goLiveEdge(){
 
     if(refreshing)
@@ -1345,6 +1399,10 @@ async function startPlayer(){
     }
   }
 
+
+  /* =====================================
+     RECONNECT
+  ===================================== */
 
   async function reload(){
 
@@ -1436,6 +1494,10 @@ async function startPlayer(){
   }
 
 
+  /* =====================================
+     SHAKA ERRORS
+  ===================================== */
+
   var RECOVERABLE = [
 
     1001,
@@ -1462,6 +1524,11 @@ async function startPlayer(){
         err &&
         err.code;
 
+
+      /*
+        Relax quality restrictions
+        if selected stream is unavailable.
+      */
 
       if(
         code === 4014 &&
@@ -1559,6 +1626,10 @@ async function startPlayer(){
   );
 
 
+  /* =====================================
+     INITIAL LOAD
+  ===================================== */
+
   try{
 
     setMsg(
@@ -1587,6 +1658,11 @@ async function startPlayer(){
       5000
     );
 
+
+    /*
+      2nd code behavior:
+      autoplay muted
+    */
 
     $vid.muted = true;
 
@@ -1626,6 +1702,10 @@ async function startPlayer(){
     return;
   }
 
+
+  /* =====================================
+     BUFFER / STALL
+  ===================================== */
 
   function onStall(){
 
@@ -1740,6 +1820,10 @@ async function startPlayer(){
   );
 
 
+  /* =====================================
+     VISIBILITY RECOVERY
+  ===================================== */
+
   document.addEventListener(
     "visibilitychange",
     function(){
@@ -1767,6 +1851,10 @@ async function startPlayer(){
     }
   );
 
+
+  /* =====================================
+     NETWORK QUALITY
+  ===================================== */
 
   var netConn =
     navigator.connection ||
@@ -1824,6 +1912,10 @@ async function startPlayer(){
   }
 
 
+  /* =====================================
+     WAKE LOCK
+  ===================================== */
+
   if("wakeLock" in navigator){
 
     navigator.wakeLock
@@ -1839,6 +1931,10 @@ async function startPlayer(){
 
 }
 
+
+/* =========================================
+   START
+========================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
