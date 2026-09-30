@@ -194,89 +194,6 @@ video.mode-cover{
 }
 
 /* =========================
-   TELEGRAM BADGE (LEFT SIDE)
-========================= */
-
-#tgBadge{
-  position:fixed;
-  top:max(14px,env(safe-area-inset-top));
-  left:max(14px,env(safe-area-inset-left));
-  z-index:9998;
-
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-
-  padding:10px 18px 10px 13px;
-
-  border-radius:100px;
-  text-decoration:none;
-
-  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  font-weight:800;
-  font-size:13px;
-  letter-spacing:.4px;
-
-  color:#fff;
-
-  background:linear-gradient(135deg,#2AABEE 0%,#229ED9 55%,#1c7fc4 100%);
-  border:1px solid rgba(255,255,255,.18);
-
-  box-shadow:
-    0 8px 24px rgba(42,171,238,.45),
-    0 0 0 1px rgba(42,171,238,.1);
-
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-
-  transition:
-    transform .22s ease,
-    box-shadow .22s ease;
-
-  -webkit-tap-highlight-color:transparent;
-  animation:tgGlow 2.8s ease-in-out infinite
-}
-
-#tgBadge:hover{
-  transform:translateY(-2px) scale(1.03);
-  box-shadow:
-    0 14px 34px rgba(42,171,238,.65),
-    0 0 0 1px rgba(42,171,238,.25);
-  animation-play-state:paused
-}
-
-#tgBadge:active{
-  transform:scale(.96)
-}
-
-#tgBadge svg{
-  width:20px;
-  height:20px;
-  flex-shrink:0;
-  fill:#fff;
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))
-}
-
-#tgBadge span{
-  white-space:nowrap;
-  text-shadow:0 1px 6px rgba(0,0,0,.3)
-}
-
-@keyframes tgGlow{
-  0%,100%{
-    box-shadow:
-      0 8px 24px rgba(42,171,238,.45),
-      0 0 0 1px rgba(42,171,238,.1)
-  }
-
-  50%{
-    box-shadow:
-      0 8px 32px rgba(42,171,238,.75),
-      0 0 0 1px rgba(42,171,238,.28)
-  }
-}
-
-/* =========================
    CUSTOM SHAKA BUTTONS
 ========================= */
 
@@ -379,44 +296,6 @@ video.mode-cover{
 .shaka-spinner-container{
   display:none!important
 }
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media(max-width:380px){
-
-  .fit-pill{
-    font-size:9px;
-    padding:2px 5px
-  }
-
-  .sp-btn{
-    padding:0 5px!important
-  }
-
-  /* Collapse TG badge to circle on tiny screens */
-  #tgBadge{
-    padding:0;
-    width:42px;
-    height:42px;
-    gap:0;
-    justify-content:center
-  }
-
-  #tgBadge span{display:none}
-  #tgBadge svg{width:20px;height:20px}
-}
-
-@media(max-width:480px){
-  #tgBadge{
-    padding:8px 12px 8px 10px;
-    font-size:12px;
-    gap:7px
-  }
-
-  #tgBadge svg{width:18px;height:18px}
-}
 </style>
 </head>
 
@@ -458,25 +337,6 @@ video.mode-cover{
 ========================= -->
 
 <div id="status"></div>
-
-
-<!-- =========================
-     TELEGRAM BADGE (LEFT SIDE)
-========================= -->
-
-<a id="tgBadge"
-   href="https://t.me/sportlink10"
-   target="_blank"
-   rel="noopener"
-   title="@Sportlink">
-
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-  </svg>
-
-  <span>@Sportlink</span>
-
-</a>
 
 
 <!-- =========================
