@@ -1,325 +1,1824 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<title>Live Channels</title>
-<link rel="icon" href="/sportlink.png">
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SMZXC121E6"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-SMZXC121E6');
-</script>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/controls.css">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;background:#0a0a0f;font-family:'Segoe UI',sans-serif;overflow:hidden;}
-
-#main-iframe{width:100%;height:100%;border:none;display:block;position:absolute;top:0;left:0;background:#0a0a0f;}
-
-#picker{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#0a0a0f;display:none;}
-
-.picker-header{
-  position:sticky;top:0;z-index:10;
-  background:linear-gradient(180deg,#0a0a0f 80%,transparent);
-  padding:20px 16px 10px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  flex-wrap:wrap;
+*,*::before,*::after{
+  margin:0;
+  padding:0;
+  box-sizing:border-box
 }
-.picker-title{color:#fff;font-size:20px;font-weight:700;letter-spacing:.5px;flex-shrink:0;}
-.picker-title span{color:#1e88e5;}
 
-.search-bar{padding:0 16px 12px;}
-.search-bar input{
-  width:100%;background:#1a1a2e;border:1px solid #2a2a40;
-  border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;outline:none;
+html,body{
+  width:100%;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none
 }
-.search-bar input::placeholder{color:#555;}
-.search-bar input:focus{border-color:#1e88e5;}
 
-.channel-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:10px;padding:0 16px 24px;
+/* =========================
+   LOADING OVERLAY
+========================= */
+
+#overlay{
+  position:fixed;
+  inset:0;
+  background:#0a0a0a;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:16px
 }
-.channel-card{
-  background:#141420;border:1px solid #1e1e30;border-radius:12px;
-  padding:12px;cursor:pointer;
-  transition:background .15s,border-color .15s,transform .1s;
-  display:flex;align-items:center;gap:10px;text-decoration:none;
+
+#overlay svg{
+  animation:spin 1s linear infinite
 }
-.channel-card:active{transform:scale(.97);}
-.channel-card:hover{background:#1a1a2e;border-color:#1e88e5;}
 
-.channel-logo{
-  width:36px;height:36px;border-radius:9px;object-fit:cover;
-  background:#1e1e30;flex-shrink:0;display:block;
+@keyframes spin{
+  to{transform:rotate(360deg)}
 }
-.channel-dot{
-  width:10px;height:10px;border-radius:50%;background:#1e88e5;flex-shrink:0;
-  box-shadow:0 0 6px #1e88e5;margin:0 13px;
+
+#overlay p{
+  color:#505050;
+  font-size:12px;
+  letter-spacing:.5px;
+  text-align:center;
+  padding:0 24px;
+  font-weight:500
 }
-.channel-info{min-width:0;display:flex;flex-direction:column;gap:3px;}
-.channel-name{
-  color:#e0e0e0;font-size:13px;font-weight:500;line-height:1.3;
-  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;
-  -webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;
+
+/* =========================
+   PLAYER
+========================= */
+
+#pc{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  touch-action:manipulation
 }
-.channel-cat{color:#4a6fa5;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
-.no-results{color:#444;text-align:center;padding:40px 16px;font-size:14px;grid-column:1/-1;}
-</style>
-</head>
-<body>
 
-<iframe id="main-iframe" allowfullscreen allow="encrypted-media; fullscreen; autoplay; picture-in-picture"></iframe>
+video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#000
+}
 
-<div id="picker">
-  <div class="picker-header">
-    <div class="picker-title">⚡ <span>Live</span> Channels</div>
-  </div>
-  <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search channels…" autocomplete="off">
-  </div>
-  <div class="channel-grid" id="channel-grid"></div>
-</div>
+video.mode-fill{
+  object-fit:fill
+}
 
-<script>
-window.addEventListener('DOMContentLoaded', function () {
-  'use strict';
+video.mode-cover{
+  object-fit:cover
+}
 
-  var JSON_URLS = [
-    'https://sonujson-v5.pages.dev/loura.json',
-    'https://sportlink-tv10.pages.dev/id.json'
-  ];
-  var FETCH_TIMEOUT = 10000;
+/* =========================
+   STATUS TOAST
+========================= */
 
-  var urlParams = new URLSearchParams(window.location.search);
-  var id        = urlParams.get('id');
-  var iframe    = document.getElementById('main-iframe');
-  var picker    = document.getElementById('picker');
+#status{
+  position:fixed;
+  top:max(14px,env(safe-area-inset-top));
+  right:12%;
+  transform:translateY(-10px);
+  z-index:9997;
 
-  // If no ?id= parameter is present, do not redirect, just show channel picker or handle accordingly.
-  // (Removed the automatic redirect to Telegram as requested)
+  display:flex;
+  align-items:center;
+  gap:7px;
 
-  function normalise(raw) {
-    if (Array.isArray(raw)) return raw;
-    if (!raw || typeof raw !== 'object') return [];
-    if (Array.isArray(raw.iframes))  return raw.iframes;
-    if (Array.isArray(raw.channels)) return raw.channels;
-    if (Array.isArray(raw.data))     return raw.data;
-    return [raw];
+  padding:6px 15px 6px 11px;
+
+  background:rgba(10,10,10,.92);
+  border:1px solid rgba(255,255,255,.07);
+
+  font-size:11.5px;
+  font-weight:500;
+  letter-spacing:.2px;
+
+  border-radius:24px;
+  pointer-events:none;
+
+  opacity:0;
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
+
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
+  white-space:nowrap;
+  max-width:calc(100vw - 32px);
+  overflow:hidden;
+
+  box-shadow:0 2px 14px rgba(0,0,0,.45)
+}
+
+#status.show{
+  opacity:1;
+  transform:translateY(0)
+}
+
+.st-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:inline-block
+}
+
+#status.ok{
+  color:#c0c0c0
+}
+
+#status.ok .st-dot{
+  background:#60a5fa
+}
+
+#status.live{
+  color:#c8c8c8
+}
+
+#status.live .st-dot{
+  background:#22d3a0;
+  animation:dot-pulse 2s ease-in-out infinite
+}
+
+#status.warn{
+  color:#fcd34d
+}
+
+#status.warn .st-dot{
+  background:#fb923c;
+  animation:dot-pulse 1s ease-in-out infinite
+}
+
+#status.err{
+  color:#fca5a5
+}
+
+#status.err .st-dot{
+  background:#f87171
+}
+
+@keyframes dot-pulse{
+  0%,100%{
+    opacity:1;
+    transform:scale(1)
   }
 
-  function fetchWithTimeout(url, ms) {
-    var ctrl  = ('AbortController' in window) ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, ms);
-    var opts  = { cache: 'no-store' };
-    if (ctrl) opts.signal = ctrl.signal;
+  50%{
+    opacity:.35;
+    transform:scale(.55)
+  }
+}
 
-    return fetch(url, opts).then(
-      function (res) { clearTimeout(timer); return res; },
-      function (err) { clearTimeout(timer); throw err; }
+/* =========================
+   CUSTOM SHAKA BUTTONS
+========================= */
+
+.sp-btn{
+  background:transparent!important;
+  border:none!important;
+  cursor:pointer!important;
+
+  padding:0 8px!important;
+
+  opacity:.75;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  height:100%;
+  min-width:36px;
+
+  transition:
+    opacity .15s,
+    color .15s;
+
+  color:#fff!important;
+
+  -webkit-tap-highlight-color:transparent
+}
+
+.sp-btn:hover{
+  opacity:1
+}
+
+.sp-btn:active{
+  opacity:1;
+  transform:scale(.9)
+}
+
+.sp-btn:focus-visible{
+  outline:2px solid #38bdf8;
+  outline-offset:2px;
+  border-radius:6px
+}
+
+.sp-btn.active{
+  opacity:1;
+  color:#38bdf8!important
+}
+
+.sp-fit-btn{
+  padding:0 7px!important;
+  min-width:auto!important
+}
+
+.fit-pill{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.4px;
+
+  padding:3px 7px;
+
+  border-radius:4px;
+  line-height:1;
+
+  border:1.5px solid rgba(255,255,255,.28);
+
+  color:rgba(255,255,255,.8);
+
+  pointer-events:none;
+  white-space:nowrap;
+
+  transition:
+    border-color .2s,
+    color .2s
+}
+
+.sp-fit-btn:hover .fit-pill{
+  border-color:rgba(255,255,255,.55);
+  color:#fff
+}
+
+.sp-fit-btn.mode-fill .fit-pill{
+  border-color:#38bdf8;
+  color:#38bdf8
+}
+
+.sp-fit-btn.mode-cover .fit-pill{
+  border-color:#a78bfa;
+  color:#a78bfa
+}
+
+.shaka-controls-container button{
+  color:#fff!important
+}
+
+.shaka-video-container{
+  background-color:#000!important
+}
+
+/* Hide default Shaka spinner */
+.shaka-spinner-container{
+  display:none!important
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:380px){
+  .fit-pill{
+    font-size:9px;
+    padding:2px 5px
+  }
+
+  .sp-btn{
+    padding:0 5px!important
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOADING OVERLAY
+========================= -->
+
+<div id="overlay">
+
+  <svg width="34"
+       height="34"
+       viewBox="0 0 40 40"
+       fill="none">
+
+    <circle
+      cx="20"
+      cy="20"
+      r="16"
+      stroke="#1a1a1a"
+      stroke-width="4"/>
+
+    <path
+      d="M20 4a16 16 0 0 1 16 16"
+      stroke="#38bdf8"
+      stroke-width="4"
+      stroke-linecap="round"/>
+
+  </svg>
+
+  <p id="loadMsg">Loading…</p>
+
+</div>
+
+
+<!-- =========================
+     STATUS
+========================= -->
+
+<div id="status"></div>
+
+
+<!-- =========================
+     PLAYER
+========================= -->
+
+<div id="pc">
+
+  <video
+    id="v"
+    playsinline
+    webkit-playsinline
+    preload="none"
+    autoplay
+    muted
+    x5-video-player-type="h5"
+    x5-video-player-fullscreen="true">
+  </video>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@5.2.4/dist/shaka-player.ui.min.js"></script>
+
+<script>
+(function(){
+
+"use strict";
+
+
+/* =========================================
+   DOM
+========================================= */
+
+var $overlay = document.getElementById("overlay");
+var $loadMsg = document.getElementById("loadMsg");
+var $status  = document.getElementById("status");
+var $pc      = document.getElementById("pc");
+var $vid     = document.getElementById("v");
+
+var _stTmr = null;
+
+
+/* =========================================
+   URL / STREAM PARSER
+========================================= */
+
+function getStreamInfo(){
+
+  var params = new URLSearchParams(window.location.search);
+
+  var urlParam = params.get("url");
+
+  if(!urlParam){
+    return null;
+  }
+
+  try{
+
+    var decodedUrl = decodeURIComponent(urlParam);
+
+    var keysParam = params.get("keys");
+
+    if(keysParam){
+
+      var decodedKeys = decodeURIComponent(keysParam);
+
+      var keyParts = decodedKeys.split(":");
+
+      if(keyParts.length !== 2){
+        throw new Error("Invalid keys");
+      }
+
+      return {
+        mpdUrl: decodedUrl,
+        keyId: keyParts[0],
+        key: keyParts[1]
+      };
+    }
+
+    var parts = decodedUrl.split("|");
+
+    if(parts.length === 1){
+
+      return {
+        mpdUrl: decodedUrl,
+        noDrm: true
+      };
+    }
+
+    if(parts.length !== 2){
+      throw new Error("Invalid format");
+    }
+
+    var keys = parts[1].split(":");
+
+    if(keys.length !== 2){
+      throw new Error("Invalid key format");
+    }
+
+    return {
+      mpdUrl: parts[0],
+      keyId: keys[0],
+      key: keys[1]
+    };
+
+  }catch(e){
+
+    console.error("URL parse error:",e);
+
+    return null;
+  }
+}
+
+
+/* =========================================
+   DEVICE / PERFORMANCE PROFILE
+========================================= */
+
+function getTier(){
+
+  var mem =
+    navigator.deviceMemory || 4;
+
+  var cores =
+    navigator.hardwareConcurrency || 4;
+
+  var mob =
+    /Android|iPhone|iPad|iPod/i.test(
+      navigator.userAgent
+    );
+
+  var conn =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+
+  var net =
+    conn ?
+    (conn.effectiveType || "4g") :
+    "4g";
+
+
+  if(!mob)
+    return "high";
+
+
+  if(
+    mem <= 1.5 ||
+    cores <= 2 ||
+    net === "slow-2g" ||
+    net === "2g"
+  )
+    return "low";
+
+
+  if(
+    mem <= 3 ||
+    cores <= 4
+  )
+    return "mid";
+
+
+  return "high";
+}
+
+
+var TIER = getTier();
+
+
+var PROF = {
+
+  low:{
+    buf:4,
+    reBuf:1.5,
+    behind:10,
+    maxH:480,
+    maxBw:1000000,
+    bwEst:400000
+  },
+
+  mid:{
+    buf:7,
+    reBuf:1.5,
+    behind:20,
+    maxH:720,
+    maxBw:3000000,
+    bwEst:1000000
+  },
+
+  high:{
+    buf:10,
+    reBuf:1.5,
+    behind:25,
+    maxH:1080,
+    maxBw:0,
+    bwEst:2000000
+  }
+
+}[TIER];
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+function toast(msg,type,dur){
+
+  $status.innerHTML =
+    '<span class="st-dot"></span>' +
+    '<span>' + msg + '</span>';
+
+  $status.className =
+    "show " + (type || "ok");
+
+
+  if(_stTmr){
+
+    clearTimeout(_stTmr);
+    _stTmr = null;
+  }
+
+
+  if(dur !== 0){
+
+    _stTmr = setTimeout(function(){
+
+      $status.className =
+        $status.className
+          .replace("show","")
+          .trim();
+
+      _stTmr = null;
+
+    },dur || 4000);
+  }
+}
+
+
+function setMsg(m){
+
+  if($loadMsg)
+    $loadMsg.textContent = m;
+}
+
+
+function hideOverlay(){
+
+  if($overlay)
+    $overlay.style.display = "none";
+}
+
+
+/* =========================================
+   ERROR TEXT
+========================================= */
+
+function shakaErrStr(e){
+
+  if(!e)
+    return "Playback Error";
+
+
+  var cat = {
+    1:"Network",
+    2:"Text",
+    3:"Media",
+    4:"Manifest",
+    5:"Stream",
+    6:"DRM",
+    7:"Player"
+  };
+
+
+  var s =
+    (cat[e.category] || "Error") +
+    " " +
+    e.category +
+    ":" +
+    e.code;
+
+
+  if(
+    e.data &&
+    e.data[0] &&
+    typeof e.data[0] === "string"
+  ){
+
+    s +=
+      " — " +
+      e.data[0].slice(0,72);
+  }
+
+
+  return s;
+}
+
+
+/* =========================================
+   VIDEO RATIO
+========================================= */
+
+function ratioLabel(w,h){
+
+  if(!w || !h)
+    return "—";
+
+
+  function gcd(a,b){
+
+    return b ?
+      gcd(b,a%b) :
+      a;
+  }
+
+
+  var g =
+    gcd(w,h) || 1;
+
+
+  var rw =
+    w/g;
+
+  var rh =
+    h/g;
+
+
+  var named = {
+
+    "16:9":16/9,
+    "4:3":4/3,
+    "21:9":21/9,
+    "1:1":1,
+    "9:16":9/16,
+    "3:2":3/2,
+    "5:4":5/4,
+    "2:1":2
+
+  };
+
+
+  var real =
+    w/h;
+
+  var best = null;
+
+  var bestD = .02;
+
+
+  Object.keys(named).forEach(function(k){
+
+    var d =
+      Math.abs(named[k] - real);
+
+    if(d < bestD){
+
+      bestD = d;
+      best = k;
+    }
+  });
+
+
+  if(best)
+    return best;
+
+
+  if(
+    rw <= 40 &&
+    rh <= 40
+  )
+    return rw + ":" + rh;
+
+
+  return real.toFixed(2) + ":1";
+}
+
+
+/* =========================================
+   FIT / FILL / ZOOM
+========================================= */
+
+function injectControls(container,vid){
+
+  var panel =
+    container.querySelector(
+      ".shaka-controls-button-panel"
+    );
+
+
+  if(!panel)
+    return false;
+
+
+  var anchor =
+    panel.querySelector(
+      ".shaka-fullscreen-button"
+    );
+
+
+  var FITS =
+    ["contain","fill","cover"];
+
+
+  var FIT_LABELS = {
+
+    contain:"Fit",
+    fill:"Fill",
+    cover:"Zoom"
+
+  };
+
+
+  var fitIdx = 0;
+
+
+  var fitBtn =
+    document.createElement("button");
+
+
+  fitBtn.className =
+    "sp-btn sp-fit-btn";
+
+
+  fitBtn.title =
+    "Video Fit: Fit";
+
+
+  fitBtn.setAttribute(
+    "aria-label",
+    "Cycle Video Fit Mode"
+  );
+
+
+  fitBtn.innerHTML =
+    '<span class="fit-pill">—</span>';
+
+
+  if(anchor)
+    panel.insertBefore(fitBtn,anchor);
+
+  else
+    panel.appendChild(fitBtn);
+
+
+  var currentRatio = "—";
+
+
+  function applyFit(i){
+
+    fitIdx = i;
+
+
+    var m =
+      FITS[i];
+
+
+    vid.classList.remove(
+      "mode-fill",
+      "mode-cover"
+    );
+
+
+    if(m === "fill")
+      vid.classList.add("mode-fill");
+
+
+    if(m === "cover")
+      vid.classList.add("mode-cover");
+
+
+    fitBtn.classList.remove(
+      "mode-fill",
+      "mode-cover"
+    );
+
+
+    if(m !== "contain"){
+
+      fitBtn.classList.add(
+        "mode-" + m
+      );
+    }
+
+
+    fitBtn.title =
+      "Video Fit: " +
+      FIT_LABELS[m];
+
+
+    var pill =
+      fitBtn.querySelector(
+        ".fit-pill"
+      );
+
+
+    if(pill){
+
+      pill.textContent =
+        m === "contain" ?
+        currentRatio :
+        FIT_LABELS[m];
+    }
+  }
+
+
+  fitBtn.addEventListener(
+    "click",
+    function(e){
+
+      e.stopPropagation();
+
+      applyFit(
+        (fitIdx + 1) %
+        FITS.length
+      );
+    }
+  );
+
+
+  [
+    "fullscreenchange",
+    "webkitfullscreenchange"
+  ].forEach(function(ev){
+
+    document.addEventListener(
+      ev,
+      function(){
+
+        if(
+          !document.fullscreenElement &&
+          !document.webkitFullscreenElement
+        ){
+
+          applyFit(0);
+        }
+      }
+    );
+  });
+
+
+  var ratioTries = 0;
+
+
+  function updateRatio(){
+
+    var pill =
+      fitBtn.querySelector(
+        ".fit-pill"
+      );
+
+
+    if(!pill)
+      return;
+
+
+    if(vid.videoWidth > 0){
+
+      currentRatio =
+        ratioLabel(
+          vid.videoWidth,
+          vid.videoHeight
+        );
+
+
+      if(FITS[fitIdx] === "contain")
+        pill.textContent =
+          currentRatio;
+
+
+      ratioTries = 0;
+
+    }else if(ratioTries < 15){
+
+      ratioTries++;
+
+      setTimeout(
+        updateRatio,
+        700
+      );
+    }
+  }
+
+
+  vid.addEventListener(
+    "loadedmetadata",
+    function(){
+
+      ratioTries = 0;
+      updateRatio();
+    }
+  );
+
+
+  vid.addEventListener(
+    "resize",
+    updateRatio
+  );
+
+
+  vid.addEventListener(
+    "timeupdate",
+    function onFirstFrame(){
+
+      vid.removeEventListener(
+        "timeupdate",
+        onFirstFrame
+      );
+
+      updateRatio();
+    }
+  );
+
+
+  updateRatio();
+
+
+  return true;
+}
+
+
+/* =========================================
+   MAIN PLAYER
+========================================= */
+
+async function startPlayer(){
+
+  shaka.polyfill.installAll();
+
+
+  if(!shaka.Player.isBrowserSupported()){
+
+    setMsg(
+      "Browser Not Supported."
+    );
+
+    toast(
+      "Browser Not Supported.",
+      "err",
+      0
+    );
+
+    return;
+  }
+
+
+  var streamInfo =
+    getStreamInfo();
+
+
+  if(!streamInfo){
+
+    setMsg(
+      "Missing or invalid ?url= parameter"
+    );
+
+    toast(
+      "Missing or invalid stream URL.",
+      "err",
+      0
+    );
+
+    return;
+  }
+
+
+  var player =
+    new shaka.Player();
+
+
+  await player.attach($vid);
+
+
+  new shaka.ui.Overlay(
+    player,
+    $pc,
+    $vid
+  ).configure({
+
+    controlPanelElements:[
+      "play_pause",
+      "mute",
+      "volume",
+      "time_and_duration",
+      "spacer",
+      "quality",
+      "picture_in_picture",
+      "fullscreen",
+      "overflow_menu"
+    ],
+
+    seekBarColors:{
+      base:"#828282",
+      buffered:"#ffc336",
+      played:"#1fc7ff"
+    }
+
+  });
+
+
+  var injectCount = 0;
+
+
+  (function tryInject(){
+
+    if(
+      injectControls(
+        $pc,
+        $vid
+      )
+    )
+      return;
+
+
+    if(++injectCount < 10){
+
+      setTimeout(
+        tryInject,
+        150
+      );
+    }
+
+  })();
+
+
+  if(streamInfo.noDrm){
+
+    player.configure({
+      drm:{}
+    });
+
+  }else if(
+    streamInfo.keyId &&
+    streamInfo.key
+  ){
+
+    var clearKeys = {};
+
+    clearKeys[
+      streamInfo.keyId
+    ] = streamInfo.key;
+
+
+    player.configure({
+      drm:{
+        clearKeys:clearKeys
+      }
+    });
+  }
+
+
+  var restrictionsRelaxed =
+    false;
+
+  var thermalApplied =
+    false;
+
+  var sessionStart =
+    Date.now();
+
+
+  var thermalTimer =
+    setInterval(function(){
+
+      if(
+        Date.now() -
+        sessionStart <
+        60 * 60 * 1000
+      )
+        return;
+
+
+      clearInterval(
+        thermalTimer
+      );
+
+
+      if(thermalApplied)
+        return;
+
+
+      thermalApplied = true;
+
+
+      try{
+
+        player.configure(
+          "streaming.bufferBehind",
+          8
+        );
+
+
+        if(
+          /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+          )
+        ){
+
+          player.configure(
+            "abr.restrictions.maxHeight",
+            Math.min(
+              PROF.maxH,
+              720
+            )
+          );
+        }
+
+      }catch(_){}
+    },60000);
+
+
+  function buildCfg(){
+
+    var mobile =
+      /Android|iPhone|iPad|iPod/i.test(
+        navigator.userAgent
+      );
+
+
+    var effMaxH =
+      thermalApplied && mobile ?
+      Math.min(PROF.maxH,720) :
+      PROF.maxH;
+
+
+    var restr = {};
+
+
+    if(!restrictionsRelaxed){
+
+      if(effMaxH < 1080)
+        restr.maxHeight =
+          effMaxH;
+
+
+      if(PROF.maxBw > 0)
+        restr.maxBandwidth =
+          PROF.maxBw;
+    }
+
+
+    return {
+
+      manifest:{
+        defaultPresentationDelay:4,
+        ignoreTextStreamFailures:true,
+        retryParameters:{
+          maxAttempts:5,
+          baseDelay:500,
+          backoffFactor:2,
+          fuzzFactor:.5,
+          timeout:30000
+        }
+      },
+
+      streaming:{
+        lowLatencyMode:false,
+        bufferingGoal:PROF.buf,
+        rebufferingGoal:PROF.reBuf,
+        bufferBehind:PROF.behind,
+        safeSeekOffset:4,
+        stallEnabled:true,
+        stallThreshold:1,
+        stallSkip:.3,
+        inaccurateManifestTolerance:0,
+        retryParameters:{
+          maxAttempts:5,
+          baseDelay:500,
+          backoffFactor:2,
+          fuzzFactor:.5,
+          timeout:30000
+        }
+      },
+
+      abr:{
+        enabled:true,
+        defaultBandwidthEstimate:PROF.bwEst,
+        switchInterval:4,
+        restrictions:restr
+      }
+
+    };
+  }
+
+
+  player.configure(
+    buildCfg()
+  );
+
+
+  var refreshing =
+    false;
+
+  var retries =
+    0;
+
+  var edgeTried =
+    false;
+
+  var lastTry =
+    0;
+
+  var started =
+    false;
+
+  var stallTmr =
+    null;
+
+
+  function unmuteOnce(){
+    $vid.muted = false;
+  }
+
+
+  $pc.addEventListener(
+    "pointerdown",
+    unmuteOnce,
+    {
+      capture:true,
+      once:true
+    }
+  );
+
+
+  $pc.addEventListener(
+    "click",
+    unmuteOnce,
+    {
+      capture:true,
+      once:true
+    }
+  );
+
+
+  $pc.addEventListener(
+    "keydown",
+    unmuteOnce,
+    {
+      capture:true,
+      once:true
+    }
+  );
+
+
+  function goLiveEdge(){
+
+    if(refreshing)
+      return;
+
+
+    try{
+
+      player.goToLive();
+
+      edgeTried = true;
+
+
+      toast(
+        "Syncing To Live Edge…",
+        "warn",
+        2000
+      );
+
+    }catch(_){
+
+      reload();
+    }
+  }
+
+
+  async function reload(){
+
+    var now =
+      Date.now();
+
+
+    if(
+      refreshing ||
+      now - lastTry < 1500
+    )
+      return;
+
+
+    if(retries >= 5){
+
+      toast(
+        "Stream Unavailable. Please Try Again Later.",
+        "err",
+        0
+      );
+
+      return;
+    }
+
+
+    refreshing = true;
+
+    lastTry = now;
+
+    retries++;
+
+
+    toast(
+      "Reconnecting… (" +
+      retries +
+      " / 5)",
+      "warn",
+      0
+    );
+
+
+    try{
+
+      player.configure(
+        buildCfg()
+      );
+
+
+      await player.load(
+        streamInfo.mpdUrl
+      );
+
+
+      $vid.play().catch(
+        function(){}
+      );
+
+
+      retries = 0;
+
+      edgeTried = false;
+
+
+      toast(
+        "Live",
+        "live",
+        4000
+      );
+
+    }catch(_){
+
+      setTimeout(
+        reload,
+        Math.min(
+          1000 *
+          Math.pow(
+            2,
+            retries - 1
+          ),
+          8000
+        )
+      );
+
+    }finally{
+
+      refreshing = false;
+    }
+  }
+
+
+  var RECOVERABLE = [
+    1001,
+    1002,
+    1003,
+    4012,
+    6006,
+    6007,
+    7000,
+    7001,
+    7002
+  ];
+
+
+  player.addEventListener(
+    "error",
+    function(ev){
+
+      var err =
+        ev.detail;
+
+      var code =
+        err &&
+        err.code;
+
+
+      if(
+        code === 4014 &&
+        !restrictionsRelaxed
+      ){
+
+        restrictionsRelaxed =
+          true;
+
+        refreshing =
+          true;
+
+
+        player.configure(
+          buildCfg()
+        );
+
+
+        toast(
+          "Adjusting Quality…",
+          "warn",
+          2000
+        );
+
+
+        player.load(
+          streamInfo.mpdUrl
+        )
+
+        .then(function(){
+
+          $vid.play().catch(
+            function(){}
+          );
+
+
+          toast(
+            "Live",
+            "live",
+            4000
+          );
+
+        })
+
+        .catch(function(){
+
+          reload();
+
+        })
+
+        .finally(function(){
+
+          refreshing =
+            false;
+        });
+
+
+        return;
+      }
+
+
+      if(
+        RECOVERABLE.indexOf(
+          code
+        ) !== -1
+      ){
+
+        toast(
+          "Buffering…",
+          "warn",
+          0
+        );
+
+
+        setTimeout(
+          function(){
+
+            if(!refreshing)
+              reload();
+
+          },
+          700
+        );
+
+      }else{
+
+        toast(
+          shakaErrStr(err),
+          "err",
+          6000
+        );
+      }
+
+    }
+  );
+
+
+  try{
+
+    setMsg(
+      "Loading Stream…"
+    );
+
+
+    toast(
+      "Loading Stream…",
+      "warn",
+      0
+    );
+
+
+    await player.load(
+      streamInfo.mpdUrl
+    );
+
+
+    hideOverlay();
+
+
+    toast(
+      "Ready — Tap ▶ To Play",
+      "ok",
+      5000
+    );
+
+
+    $vid.muted = true;
+
+    $vid.play().catch(
+      function(){
+        console.log(
+          "Autoplay blocked"
+        );
+      }
+    );
+
+
+  }catch(e){
+
+    console.error(
+      "Initial load failed:",
+      e
+    );
+
+
+    hideOverlay();
+
+
+    toast(
+      "Connection Error — Retrying…",
+      "warn",
+      0
+    );
+
+
+    setTimeout(
+      reload,
+      1500
+    );
+
+
+    return;
+  }
+
+
+  function onStall(){
+
+    if(stallTmr)
+      return;
+
+
+    toast(
+      "Buffering…",
+      "warn",
+      0
+    );
+
+
+    if(
+      !started ||
+      refreshing
+    )
+      return;
+
+
+    stallTmr =
+      setTimeout(
+        function(){
+
+          stallTmr = null;
+
+
+          if(!edgeTried)
+            goLiveEdge();
+
+          else
+            reload();
+
+        },
+        5000
+      );
+  }
+
+
+  function onPlaying(){
+
+    started = true;
+
+
+    if(stallTmr){
+
+      clearTimeout(
+        stallTmr
+      );
+
+      stallTmr = null;
+    }
+
+
+    edgeTried = false;
+
+
+    if(!refreshing){
+
+      toast(
+        "Live",
+        "live",
+        3000
+      );
+    }
+  }
+
+
+  $vid.addEventListener(
+    "waiting",
+    onStall
+  );
+
+
+  $vid.addEventListener(
+    "stalled",
+    onStall
+  );
+
+
+  $vid.addEventListener(
+    "playing",
+    onPlaying
+  );
+
+
+  $vid.addEventListener(
+    "error",
+    function(){
+
+      if(!refreshing){
+
+        toast(
+          "Buffering…",
+          "warn",
+          0
+        );
+
+
+        setTimeout(
+          function(){
+
+            if(!refreshing)
+              reload();
+
+          },
+          700
+        );
+      }
+    }
+  );
+
+
+  document.addEventListener(
+    "visibilitychange",
+    function(){
+
+      if(!document.hidden){
+
+        setTimeout(
+          function(){
+
+            if(
+              started &&
+              $vid.paused &&
+              !refreshing
+            ){
+
+              $vid.play().catch(
+                function(){}
+              );
+            }
+
+          },
+          400
+        );
+      }
+    }
+  );
+
+
+  var netConn =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+
+
+  if(netConn){
+
+    netConn.addEventListener(
+      "change",
+      function(){
+
+        if(
+          !player ||
+          restrictionsRelaxed
+        )
+          return;
+
+
+        var t =
+          netConn.effectiveType ||
+          "4g";
+
+
+        var h =
+          t === "slow-2g" ||
+          t === "2g"
+            ? 240
+            : t === "3g"
+              ? 480
+              : PROF.maxH;
+
+
+        try{
+
+          player.configure(
+            "abr.restrictions.maxHeight",
+            h
+          );
+
+        }catch(_){}
+
+
+        if(h < PROF.maxH){
+
+          toast(
+            "Slow Network — Reducing Quality",
+            "warn",
+            3000
+          );
+        }
+      }
     );
   }
 
-  async function loadChannels() {
-    var errors = [];
-    var combined = [];
 
-    for (var i = 0; i < JSON_URLS.length; i++) {
-      var url = JSON_URLS[i];
-      try {
-        var res = await fetchWithTimeout(url, FETCH_TIMEOUT);
+  if("wakeLock" in navigator){
 
-        if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+    navigator.wakeLock
+      .request("screen")
+      .catch(function(err){
 
-        var txt = await res.text();
-        var raw;
-
-        try {
-          raw = JSON.parse(txt);
-        } catch (parseErr) {
-          throw new Error('response was not JSON (got HTML/404 page?)');
-        }
-
-        combined = combined.concat(normalise(raw));
-      } catch (e) {
-        var reason = (e && e.name === 'AbortError')
-          ? 'timed out after ' + (FETCH_TIMEOUT / 1000) + 's'
-          : (e && e.message ? e.message : String(e));
-        errors.push(url + ' -> ' + reason);
-      }
-    }
-
-    if (!combined.length) {
-      throw new Error(errors.join('  |  '));
-    }
-
-    return combined;
-  }
-
-  function showPickerMode(channels) {
-    iframe.style.display = 'none';
-    picker.style.display = 'block';
-    renderChannels(channels);
-
-    var search = document.getElementById('search-input');
-    if (search.dataset.bound === '1') return;
-    search.dataset.bound = '1';
-
-    search.addEventListener('input', function (e) {
-      var q = e.target.value.trim().toLowerCase();
-      renderChannels(channels.filter(function (c) {
-        return (c.name || '').toLowerCase().indexOf(q) !== -1 ||
-               (c.category || '').toLowerCase().indexOf(q) !== -1;
-      }));
-    });
-  }
-
-  function renderChannels(channels) {
-    var grid = document.getElementById('channel-grid');
-    grid.innerHTML = '';
-
-    if (!channels.length) {
-      var empty = document.createElement('div');
-      empty.className = 'no-results';
-      empty.textContent = 'No channels found';
-      grid.appendChild(empty);
-      return;
-    }
-
-    var seen = new Set();
-
-    channels.forEach(function (ch) {
-      var key = (ch.id !== undefined && ch.id !== null) ? String(ch.id) : (ch.name || '');
-      if (!key || seen.has(key)) return;
-      seen.add(key);
-
-      var card = document.createElement('a');
-      card.className = 'channel-card';
-      card.href = '?id=' + encodeURIComponent(ch.id !== undefined && ch.id !== null ? ch.id : '');
-
-      if (ch.logourl) {
-        var img = document.createElement('img');
-        img.className = 'channel-logo';
-        img.src = ch.logourl;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.onerror = function () {
-          var dot = document.createElement('div');
-          dot.className = 'channel-dot';
-          if (img.parentNode) img.parentNode.replaceChild(dot, img);
-        };
-        card.appendChild(img);
-      } else {
-        var dot = document.createElement('div');
-        dot.className = 'channel-dot';
-        card.appendChild(dot);
-      }
-
-      var info = document.createElement('div');
-      info.className = 'channel-info';
-
-      var nameEl = document.createElement('div');
-      nameEl.className = 'channel-name';
-      nameEl.textContent = ch.name || 'Unnamed';
-      info.appendChild(nameEl);
-
-      if (ch.category) {
-        var catEl = document.createElement('div');
-        catEl.className = 'channel-cat';
-        catEl.textContent = ch.category;
-        info.appendChild(catEl);
-      }
-
-      card.appendChild(info);
-      grid.appendChild(card);
-    });
-  }
-
-  function showError(msg) {
-    iframe.style.display = 'none';
-    picker.style.display = 'none';
-
-    var old = document.getElementById('error-screen');
-    if (old) old.parentNode.removeChild(old);
-
-    var box = document.createElement('div');
-    box.id = 'error-screen';
-    box.style.cssText =
-      'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;' +
-      'justify-content:center;gap:14px;padding:24px;text-align:center;' +
-      'color:#fff;font-family:Segoe UI,sans-serif;';
-
-    var title = document.createElement('div');
-    title.style.cssText = 'font-size:18px;font-weight:700;';
-    title.textContent = 'Could not load channels';
-
-    var detail = document.createElement('div');
-    detail.style.cssText =
-      'font-size:12px;color:#8e9baf;max-width:460px;line-height:1.7;' +
-      'word-break:break-word;background:#141420;border:1px solid #1e1e30;' +
-      'border-radius:12px;padding:14px;';
-    detail.textContent = msg;
-
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = 'Retry';
-    btn.style.cssText =
-      'background:linear-gradient(135deg,#4fc3f7,#2196f3);color:#fff;border:none;' +
-      'border-radius:40px;padding:12px 32px;font-size:14px;font-weight:700;' +
-      'cursor:pointer;font-family:inherit;box-shadow:0 6px 24px rgba(79,195,247,.25);';
-    btn.addEventListener('click', function () {
-      box.parentNode.removeChild(box);
-      start();
-    });
-
-    box.appendChild(title);
-    box.appendChild(detail);
-    box.appendChild(btn);
-    document.body.appendChild(box);
-  }
-
-  function boot(raw) {
-    var list = normalise(raw);
-
-    if (!list.length) {
-      showError('The JSON loaded but contained no channel entries.');
-      return;
-    }
-
-    var target = list.find(function (item) {
-      return String(item.id) === String(id);
-    });
-
-    if (target && target.iframeSrc) {
-      picker.style.display  = 'none';
-      iframe.style.display  = 'block';
-      iframe.src            = target.iframeSrc;
-
-      if (target.hit) {
-        try {
-          fetch(target.hit, { mode: 'no-cors', keepalive: true }).catch(function () {});
-        } catch (e) {}
-      }
-    } else {
-      showPickerMode(list);
-    }
-  }
-
-  function start() {
-    loadChannels()
-      .then(boot)
-      .catch(function (e) {
-        showError(e && e.message ? e.message : 'Unknown error');
+        console.log(
+          "WakeLock failed:",
+          err
+        );
       });
   }
 
-  start();
-});
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  startPlayer
+);
+
+})();
 </script>
 
 </body>
