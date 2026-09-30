@@ -376,7 +376,6 @@ video.mode-cover{
 
 "use strict";
 
-
 /* =========================================
    DOM
 ========================================= */
@@ -391,80 +390,62 @@ var _stTmr = null;
 
 
 /* =========================================
-   URL / STREAM PARSER (UPDATED)
+   URL / STREAM PARSER (ROBUST FIX)
 ========================================= */
 
 function getStreamInfo(){
-  var fullParams = new URLSearchParams(window.location.search);
-  var urlParam = fullParams.get("url");
-
-  if(!urlParam){
+  var rawSearch = window.location.search;
+  if(!rawSearch || !rawSearch.includes("url=")){
     return null;
   }
 
   try{
-    // अगर पूरी लिंक या यूआरएल में ही drmLicense पैरामीटर जुड़ा हुआ है
-    var fullQueryStr = window.location.search.substring(1);
-    var drmLicenseMatch = fullQueryStr.match(/drmLicense=([^&]+)/);
-    
-    if(drmLicenseMatch && drmLicenseMatch[1]){
-      var decodedDrm = decodeURIComponent(drmLicenseMatch[1]);
-      var keyParts = decodedDrm.split(":");
-      if(keyParts.length === 2){
-        // 'url=' के बाद से लेकर '&drmLicense' या '?' तक का हिस्सा साफ़ करें
-        var cleanUrl = urlParam;
-        if(cleanUrl.includes("?|")) {
-          cleanUrl = cleanUrl.split("?|")[0];
-        }
+    // 'url=' ke baad ka sara hissa nikal lo
+    var urlStartIndex = rawSearch.indexOf("url=") + 4;
+    var remainder = rawSearch.substring(urlStartIndex);
+
+    var mpdUrl = "";
+    var drmLicenseStr = "";
+
+    // Check karo ki kya beech mein drmLicense ya pipe hai
+    if(remainder.includes("drmLicense=")) {
+      var parts = remainder.split("drmLicense=");
+      mpdUrl = parts[0];
+      drmLicenseStr = parts[1];
+    } else if(remainder.includes("|")) {
+      var parts = remainder.split("|");
+      mpdUrl = parts[0];
+      drmLicenseStr = parts[1];
+    } else {
+      mpdUrl = remainder;
+    }
+
+    // Agar mpdUrl ke end mein extra symbols ya '&' bach gaya ho toh use hatao
+    mpdUrl = mpdUrl.replace(/[?&|]+$/, "");
+    mpdUrl = decodeURIComponent(mpdUrl);
+
+    // Agar DRM license maujud hai
+    if(drmLicenseStr) {
+      drmLicenseStr = decodeURIComponent(drmLicenseStr);
+      // Ho sakta hai aage aur bhi query parameters ho, unhe hata do '&' ke pehle tak ka rakho
+      if(drmLicenseStr.includes("&")) {
+        drmLicenseStr = drmLicenseStr.split("&")[0];
+      }
+
+      var keyParts = drmLicenseStr.split(":");
+      if(keyParts.length === 2) {
         return {
-          mpdUrl: decodeURIComponent(cleanUrl),
+          mpdUrl: mpdUrl,
           keyId: keyParts[0],
           key: keyParts[1]
         };
       }
     }
 
-    var decodedUrl = decodeURIComponent(urlParam);
-    var keysParam = fullParams.get("keys");
-
-    if(keysParam){
-      var decodedKeys = decodeURIComponent(keysParam);
-      var keyParts = decodedKeys.split(":");
-
-      if(keyParts.length !== 2){
-        throw new Error("Invalid keys");
-      }
-
-      return {
-        mpdUrl: decodedUrl,
-        keyId: keyParts[0],
-        key: keyParts[1]
-      };
-    }
-
-    var parts = decodedUrl.split("|");
-
-    if(parts.length === 1){
-      return {
-        mpdUrl: decodedUrl,
-        noDrm: true
-      };
-    }
-
-    if(parts.length !== 2){
-      throw new Error("Invalid format");
-    }
-
-    var keys = parts[1].split(":");
-
-    if(keys.length !== 2){
-      throw new Error("Invalid key format");
-    }
-
+    // Agar koi DRM key nahi mili toh bina DRM ke chalao
     return {
-      mpdUrl: parts[0],
-      keyId: keys[0],
-      key: keys[1]
+      mpdUrl: mpdUrl,
+      noDrm: true
     };
 
   }catch(e){
